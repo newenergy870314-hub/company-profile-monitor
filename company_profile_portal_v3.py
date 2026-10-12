@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-기업·기관 조직도 + 주요인사 프로필 자동 업데이트 웹사이트 V3 (Prototype)
+기업·기관 조직도 + 주요인사 프로필 자동 업데이트 웹사이트 V4
 
 실행:
     python company_profile_portal_v3.py
@@ -574,7 +574,7 @@ def render_org(data: dict) -> str:
     return "".join(cards)
 
 
-def render_person(person: dict, company_name: str, idx: int) -> str:
+def render_person(person: dict, company_name: str, company_key: str, idx: int, total: int) -> str:
     img = (
         f'<img class="photo" src="{esc(person.get("image_url"))}" alt="">'
         if person.get("image_url")
@@ -595,13 +595,15 @@ def render_person(person: dict, company_name: str, idx: int) -> str:
     if birth:
         name_line += f' <span class="sub">· {birth}</span>'
 
+    profile_id = f"profile-{company_key}-{idx}"
     return f"""
-    <section class="paper profile-page" id="person-{idx}">
+    <section class="paper profile-page" id="{profile_id}">
       <div class="paper-head">
-        <div class="company">{esc(company_name)}</div>
+        <div class="company">{esc(company_name)} 주요인사 프로필</div>
         <div class="date">{TODAY}</div>
       </div>
 
+      <div class="profile-page-label">주요인사 프로필 {idx} / {total}</div>
       <h2>{esc(person.get("name"))} <span>{esc(person.get("title"))}</span></h2>
 
       <div class="identity">
@@ -631,6 +633,34 @@ def render_person(person: dict, company_name: str, idx: int) -> str:
     """
 
 
+def render_profile_index(people: list[dict], company_key: str) -> str:
+    if not people:
+        return ""
+
+    buttons = []
+    for i, person in enumerate(people, start=1):
+        target_id = f"profile-{company_key}-{i}"
+        buttons.append(
+            f'<button type="button" class="profile-jump" data-target="{target_id}">'
+            f'<strong>{esc(person.get("name"))}</strong>'
+            f'<span>{esc(person.get("title"))}</span>'
+            f'</button>'
+        )
+
+    return f"""
+    <div class="profile-index">
+      <div class="profile-index-head">
+        <div>
+          <div class="profile-index-title">주요인사 프로필</div>
+          <div class="profile-index-sub">총 {len(people)}명 · 이름을 누르면 상세 프로필로 이동</div>
+        </div>
+        <div class="profile-count">{len(people)}명</div>
+      </div>
+      <div class="profile-chip-grid">{''.join(buttons)}</div>
+    </div>
+    """
+
+
 def render_company(data: dict, changes: list[dict]) -> str:
     status = data.get("status")
     status_label = {
@@ -650,8 +680,9 @@ def render_company(data: dict, changes: list[dict]) -> str:
         """ % "".join(f"<li>{esc(x.get('text'))}</li>" for x in changes[:8])
 
     people = data.get("people", [])
+    profile_index = render_profile_index(people, data["key"])
     person_html = "".join(
-        render_person(p, data["name_ko"], i)
+        render_person(p, data["name_ko"], data["key"], i, len(people))
         for i, p in enumerate(people, start=1)
     )
     if not person_html:
@@ -683,6 +714,7 @@ def render_company(data: dict, changes: list[dict]) -> str:
 
         <h2>{esc(data['name_ko'])} 조직도</h2>
         <div class="org-grid">{render_org(data)}</div>
+        {profile_index}
         {change_html}
 
         <div class="source">
@@ -766,6 +798,18 @@ body{{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-seri
 .org-card.hot{{background:#f2e7a8;border:2px dashed #df3c3c}}
 .org-title{{font-weight:900}}
 .org-leader{{margin-top:8px;color:#185293;font-weight:800}}
+.profile-index{{margin-top:28px;padding-top:20px;border-top:2px solid #d8dde3}}
+.profile-index-head{{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}}
+.profile-index-title{{font-size:20px;font-weight:900}}
+.profile-index-sub{{font-size:12px;color:#697480;margin-top:4px}}
+.profile-count{{background:#173e6c;color:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800}}
+.profile-chip-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}}
+.profile-jump{{border:1px solid #cfd6de;background:#f8fafc;border-radius:7px;padding:11px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px}}
+.profile-jump:hover{{background:#eef5fc;border-color:#8fb4d8}}
+.profile-jump strong{{color:#174d82;font-size:14px}}
+.profile-jump span{{color:#505c68;font-size:12px}}
+.profile-page{{scroll-margin-top:76px}}
+.profile-page-label{{display:inline-block;margin-bottom:3px;padding:5px 8px;background:#eaf2fa;color:#174d82;border-radius:5px;font-size:11px;font-weight:800}}
 .identity{{display:grid;grid-template-columns:1fr 185px;gap:14px}}
 .identity-table{{display:grid;grid-template-columns:105px 1fr;border-top:1px solid #d2d6db;border-left:1px solid #d2d6db}}
 .identity-table>div{{border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;padding:16px}}
@@ -794,6 +838,7 @@ body{{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-seri
   .main{{padding:10px}}
   .paper{{width:100%;min-height:0;padding:18px}}
   .org-grid{{grid-template-columns:1fr 1fr}}
+  .profile-chip-grid{{grid-template-columns:1fr 1fr}}
   .identity{{grid-template-columns:1fr 120px}}
   .photo{{width:120px;height:150px}}
 }}
@@ -833,6 +878,14 @@ function openCompany(key){{
 }}
 buttons.forEach(b=>b.addEventListener('click',()=>openCompany(b.dataset.key)));
 
+document.addEventListener('click',(e)=>{{
+  const btn=e.target.closest('.profile-jump');
+  if(!btn) return;
+  const target=document.getElementById(btn.dataset.target);
+  if(!target) return;
+  target.scrollIntoView({{behavior:'smooth',block:'start'}});
+}});
+
 const saved=localStorage.getItem('profile-company');
 const valid=buttons.some(b=>b.dataset.key===saved);
 openCompany(valid?saved:{json.dumps(first_key)});
@@ -841,6 +894,7 @@ openCompany(valid?saved:{json.dumps(first_key)});
 </html>"""
 
     (SITE_DIR / "index.html").write_text(page, encoding="utf-8")
+    (BASE_DIR / "index.html").write_text(page, encoding="utf-8")
 
 
 # ============================================================
@@ -904,6 +958,7 @@ def main():
     print()
     print("[완료]")
     print("웹사이트 :", SITE_DIR / "index.html")
+    print("Pages 루트:", BASE_DIR / "index.html")
     print("마스터 DB:", registry_path)
     print("Snapshot :", SNAPSHOT_DIR)
     print("변경이력 :", DATA_DIR / "change_log.json")
