@@ -1,0 +1,112 @@
+{
+  "key": "motie",
+  "category": "정부기관",
+  "name_ko": "산업통상부",
+  "name_en": "Ministry of Trade, Industry and Energy",
+  "country": "한국",
+  "official_url": "",
+  "organization_url": "",
+  "leadership_url": "",
+  "updated_at": "2026-10-12T20:45:02+09:00",
+  "status": "DEMO",
+  "organization": [
+    {
+      "name": "장관",
+      "leader": "김정관",
+      "parent": "",
+      "highlight": true
+    },
+    {
+      "name": "1차관",
+      "leader": "문신학",
+      "parent": "장관",
+      "highlight": true
+    },
+    {
+      "name": "산업자원안보실",
+      "leader": "양기욱",
+      "parent": "1차관",
+      "highlight": true
+    },
+    {
+      "name": "통상교섭본부",
+      "leader": "여한구",
+      "parent": "장관",
+      "highlight": true
+    },
+    {
+      "name": "무역투자실",
+      "leader": "강감찬",
+      "parent": "통상교섭본부",
+      "highlight": true
+    },
+    {
+      "name": "원전전략기획관",
+      "leader": "김창희",
+      "parent": "산업자원안보실",
+      "highlight": true
+    }
+  ],
+  "people": [
+    {
+      "name": "김정관",
+      "name_en": "Kim, Jung-kwan",
+      "birth": "1968년생",
+      "title": "산업통상부 장관",
+      "education": [
+        "광주제일고등학교 졸업",
+        "서울대학교 경제학과 학사",
+        "미국 미주리대학교 경제학 박사"
+      ],
+      "career": [
+        "2025.7 ~ 현재 산업통상부 장관",
+        "2025 두산에너빌리티 사장",
+        "2022 ~ 2024 두산에너빌리티 부사장, 마케팅부문장(CMO)"
+      ],
+      "remarks": [
+        "전력 수요 대응과 원전 필요성 관련 주요 발언",
+        "원전 수출 경쟁력 및 유럽시장 관련 발언"
+      ]
+    },
+    {
+      "name": "문신학",
+      "name_en": "Moon, Shin-hak",
+      "birth": "1967년생",
+      "title": "산업통상부 1차관",
+      "education": [
+        "광주 조선대학교부속고등학교 졸업",
+        "서울대학교 경제학과 학사"
+      ],
+      "career": [
+        "2025.6 ~ 현재 산업통상부 차관",
+        "산업통상자원부 대변인",
+        "산업통상자원부 장관정책보좌관"
+      ],
+      "remarks": [
+        "산업·통상 정책과 성장 관련 주요 발언",
+        "기후·에너지 정책과 산업정책 연계 관련 발언"
+      ]
+    },
+    {
+      "name": "여한구",
+      "name_en": "Yeo, Han-koo",
+      "birth": "1969년생",
+      "title": "통상교섭본부장",
+      "education": [
+        "서울 경동고등학교 졸업",
+        "서울대학교 경영학과 학사",
+        "서울대학교 행정대학원 행정학 석사"
+      ],
+      "career": [
+        "산업통상부 통상교섭본부장",
+        "미국 피터슨국제경제연구소 선임연구위원",
+        "산업통상자원부 통상교섭본부장"
+      ],
+      "remarks": [
+        "글로벌 경제질서와 개방·협력 관련 주요 발언"
+      ]
+    }
+  ],
+  "source": "사용자 제공 산업통상부 조직도·주요인사 프로필 샘플",
+  "demo": true
+}

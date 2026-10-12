@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>기업·기관 조직도 및 주요인사 프로필</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;background:#eef2f6;color:#15191f}
+.topbar{height:58px;background:#0b2545;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:20}
+.topbar b{font-size:18px}
+.topbar button{border:0;background:#ffd500;padding:9px 14px;border-radius:7px;font-weight:800;cursor:pointer}
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 58px)}
+.sidebar{background:#102c50;color:#fff;padding:16px 12px;height:calc(100vh - 58px);position:sticky;top:58px;overflow:auto}
+.nav-cat{font-size:12px;color:#9fb3cc;font-weight:800;margin:18px 8px 7px}
+.company-btn{width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px}
+.company-btn:hover,.company-btn.active{background:#24496f}
+.company-btn span{display:inline-block;width:18px;color:#ffd500}
+.main{padding:22px}
+.company-view{display:none;max-width:1080px;margin:0 auto}
+.company-view.active{display:block}
+.company-summary{display:flex;align-items:flex-end;justify-content:space-between;margin:0 auto 14px;max-width:210mm}
+.company-summary h1{margin:3px 0 2px;font-size:27px}
+.company-summary .en{color:#66717e}
+.eyebrow{font-size:12px;color:#6f7a86;font-weight:700}
+.status{background:#dbe9f8;color:#174d82;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.paper{width:210mm;min-height:297mm;background:#fff;margin:0 auto 18px;padding:15mm 14mm;box-shadow:0 2px 14px rgba(0,0,0,.07)}
+.paper-head{display:flex;justify-content:space-between;border-bottom:2px solid #9fa5ac;padding-bottom:8px;margin-bottom:18px}
+.paper-head .company{font-size:20px;font-weight:900}
+.paper-head .date{font-size:14px;color:#555}
+.paper h2{font-size:28px;margin:10px 0 20px}
+.paper h2 span{font-size:20px}
+.org-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.org-card{background:#eef1f4;border:1px solid #cbd2d8;min-height:78px;padding:12px}
+.org-card.hot{background:#f2e7a8;border:2px dashed #df3c3c}
+.org-title{font-weight:900}
+.org-leader{margin-top:8px;color:#185293;font-weight:800}
+.identity{display:grid;grid-template-columns:1fr 185px;gap:14px}
+.identity-table{display:grid;grid-template-columns:105px 1fr;border-top:1px solid #d2d6db;border-left:1px solid #d2d6db}
+.identity-table>div{border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;padding:16px}
+.label{background:#f5f5f5;font-weight:900;text-align:center}
+.value{display:flex;align-items:center}
+.sub{font-weight:400;color:#555;font-size:13px}
+.photo{width:185px;height:220px;object-fit:cover;border:1px solid #ddd}
+.placeholder{display:flex;align-items:center;justify-content:center;color:#aaa;background:#fafafa;font-weight:800}
+.profile-row{display:grid;grid-template-columns:105px 1fr;border-left:1px solid #d2d6db;border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;min-height:130px}
+.profile-row.career{min-height:300px}
+.profile-row.remarks{min-height:180px}
+.row-label{background:#f5f5f5;border-right:1px solid #d2d6db;font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}
+.row-body{padding:16px 18px;line-height:1.7}
+.row-body ul{margin:0;padding-left:20px}
+.source{margin-top:20px;color:#666;font-size:11px;line-height:1.7;word-break:break-all}
+.change-box{margin-top:18px;background:#fff7d1;border:1px solid #e6cf64;padding:12px}
+.change-box ul{margin:7px 0 0;padding-left:20px}
+.empty-box{border:1px dashed #aab3bc;padding:35px;text-align:center;color:#7b8793}
+.empty-box.big{margin-top:40px;padding:90px 20px;font-size:20px}
+.muted{color:#9099a3}
+@media(max-width:900px){
+  .layout{display:block}
+  .sidebar{position:relative;top:auto;height:auto;display:flex;overflow-x:auto;padding:10px}
+  .nav-cat{display:none}
+  .company-btn{min-width:150px}
+  .main{padding:10px}
+  .paper{width:100%;min-height:0;padding:18px}
+  .org-grid{grid-template-columns:1fr 1fr}
+  .identity{grid-template-columns:1fr 120px}
+  .photo{width:120px;height:150px}
+}
+@media print{
+  .topbar,.sidebar,.company-summary{display:none!important}
+  .layout{display:block}
+  .main{padding:0}
+  .company-view{display:none!important}
+  .company-view.active{display:block!important}
+  .paper{width:auto;min-height:0;margin:0;box-shadow:none;page-break-after:always}
+  .paper:last-child{page-break-after:auto}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <b>기업·기관 조직도 및 주요인사 프로필</b>
+  <button onclick="window.print()">PDF / 인쇄</button>
+</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-cat">SMR 개발사</div><button class="company-btn" data-key="holtec"><span>○</span>홀텍 인터내셔널</button><button class="company-btn" data-key="terrapower"><span>○</span>테라파워</button><button class="company-btn" data-key="xenergy"><span>○</span>엑스에너지</button><button class="company-btn" data-key="fanco"><span>○</span>퍼스트 아메리칸 뉴클리어</button><button class="company-btn" data-key="thorizon"><span>○</span>토리존</button><div class="nav-cat">에너지 기업</div><button class="company-btn" data-key="fortum"><span>○</span>포툼</button><button class="company-btn" data-key="khnp"><span>○</span>한수원</button><button class="company-btn" data-key="kepco"><span>○</span>한국전력</button><button class="company-btn" data-key="westinghouse"><span>○</span>웨스팅하우스</button><button class="company-btn" data-key="blueenergy"><span>○</span>블루에너지</button><button class="company-btn" data-key="fermiamerica"><span>○</span>퍼미 아메리카</button><button class="company-btn" data-key="enec"><span>○</span>UAE 원자력공사</button><button class="company-btn" data-key="entergy"><span>○</span>엔터지 서비스</button><button class="company-btn" data-key="duke"><span>○</span>듀크에너지</button><button class="company-btn" data-key="pseg"><span>○</span>PSEG</button><button class="company-btn" data-key="genenergija"><span>○</span>젠 에너지</button><div class="nav-cat">연구기관</div><button class="company-btn" data-key="kaeri"><span>○</span>한국원자력연구원</button><div class="nav-cat">정부기관</div><button class="company-btn" data-key="motie"><span>●</span>산업통상부</button><button class="company-btn" data-key="mcee"><span>○</span>기후에너지환경부</button><button class="company-btn" data-key="msit"><span>○</span>과학기술정보통신부</button><div class="nav-cat">건설 및 엔지니어링 기업</div><button class="company-btn" data-key="whitingturner"><span>○</span>Whiting-Turner</button><button class="company-btn" data-key="pcl"><span>○</span>PCL Construction</button><button class="company-btn" data-key="bartonmalow"><span>○</span>Barton Malow</button><button class="company-btn" data-key="clayco"><span>○</span>Clayco</button><button class="company-btn" data-key="alberici"><span>○</span>Alberici</button><button class="company-btn" data-key="brandsafway"><span>○</span>BrandSafway</button><button class="company-btn" data-key="cbi"><span>○</span>CB&amp;I</button><button class="company-btn" data-key="dayzimmermann"><span>○</span>Day &amp; Zimmermann</button><button class="company-btn" data-key="dpr"><span>○</span>DPR Construction</button><button class="company-btn" data-key="evans"><span>○</span>Evans General Contractors</button><button class="company-btn" data-key="walbridge"><span>○</span>Walbridge</button><button class="company-btn" data-key="zachry"><span>○</span>Zachry Group</button>
+  </aside>
+  <main class="main">
+    
+    <section class="company-view" data-company="holtec">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">SMR 개발사 · 미국</div>
+          <h1>홀텍 인터내셔널</h1>
+          <div class="en">Holtec International</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">홀텍 인터내셔널 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>홀텍 인터내셔널 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="fortum">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 핀란드</div>
+          <h1>포툼</h1>
+          <div class="en">Fortum</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">포툼 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>포툼 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="khnp">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 한국</div>
+          <h1>한수원</h1>
+          <div class="en">Korea Hydro &amp; Nuclear Power (KHNP)</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">한수원 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>한수원 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="kepco">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 한국</div>
+          <h1>한국전력</h1>
+          <div class="en">Korea Electric Power Corporation (KEPCO)</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">한국전력 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>한국전력 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="kaeri">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">연구기관 · 한국</div>
+          <h1>한국원자력연구원</h1>
+          <div class="en">Korea Atomic Energy Research Institute (KAERI)</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">한국원자력연구원 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>한국원자력연구원 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="motie">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">정부기관 · 한국</div>
+          <h1>산업통상부</h1>
+          <div class="en">Ministry of Trade, Industry and Energy</div>
+        </div>
+        <div class="status">샘플 화면</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">산업통상부 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>산업통상부 조직도</h2>
+        <div class="org-grid"><div class="org-card hot"><div class="org-title">장관</div><div class="org-leader">김정관</div></div><div class="org-card hot"><div class="org-title">1차관</div><div class="org-leader">문신학</div></div><div class="org-card hot"><div class="org-title">산업자원안보실</div><div class="org-leader">양기욱</div></div><div class="org-card hot"><div class="org-title">통상교섭본부</div><div class="org-leader">여한구</div></div><div class="org-card hot"><div class="org-title">무역투자실</div><div class="org-leader">강감찬</div></div><div class="org-card hot"><div class="org-title">원전전략기획관</div><div class="org-leader">김창희</div></div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> 사용자 제공 산업통상부 조직도·주요인사 프로필 샘플</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+    <section class="paper profile-page" id="person-1">
+      <div class="paper-head">
+        <div class="company">산업통상부</div>
+        <div class="date">2026.10.12</div>
+      </div>
+
+      <h2>김정관 <span>산업통상부 장관</span></h2>
+
+      <div class="identity">
+        <div class="identity-table">
+          <div class="label">성명</div><div class="value">김정관 <span class="sub">(Kim, Jung-kwan)</span> <span class="sub">· 1968년생</span></div>
+          <div class="label">직책</div><div class="value">산업통상부 장관</div>
+          <div class="label">출처</div><div class="value">공식 홈페이지/공개자료</div>
+        </div>
+        <div class="photo placeholder">PHOTO</div>
+      </div>
+
+      <div class="profile-row">
+        <div class="row-label">학력</div>
+        <div class="row-body"><ul><li>광주제일고등학교 졸업</li><li>서울대학교 경제학과 학사</li><li>미국 미주리대학교 경제학 박사</li></ul></div>
+      </div>
+
+      <div class="profile-row career">
+        <div class="row-label">경력</div>
+        <div class="row-body"><ul><li>2025.7 ~ 현재 산업통상부 장관</li><li>2025 두산에너빌리티 사장</li><li>2022 ~ 2024 두산에너빌리티 부사장, 마케팅부문장(CMO)</li></ul></div>
+      </div>
+
+      <div class="profile-row remarks">
+        <div class="row-label">주요발언<br>·최근활동</div>
+        <div class="row-body"><ul><li>전력 수요 대응과 원전 필요성 관련 주요 발언</li><li>원전 수출 경쟁력 및 유럽시장 관련 발언</li></ul></div>
+      </div>
+    </section>
+    
+    <section class="paper profile-page" id="person-2">
+      <div class="paper-head">
+        <div class="company">산업통상부</div>
+        <div class="date">2026.10.12</div>
+      </div>
+
+      <h2>문신학 <span>산업통상부 1차관</span></h2>
+
+      <div class="identity">
+        <div class="identity-table">
+          <div class="label">성명</div><div class="value">문신학 <span class="sub">(Moon, Shin-hak)</span> <span class="sub">· 1967년생</span></div>
+          <div class="label">직책</div><div class="value">산업통상부 1차관</div>
+          <div class="label">출처</div><div class="value">공식 홈페이지/공개자료</div>
+        </div>
+        <div class="photo placeholder">PHOTO</div>
+      </div>
+
+      <div class="profile-row">
+        <div class="row-label">학력</div>
+        <div class="row-body"><ul><li>광주 조선대학교부속고등학교 졸업</li><li>서울대학교 경제학과 학사</li></ul></div>
+      </div>
+
+      <div class="profile-row career">
+        <div class="row-label">경력</div>
+        <div class="row-body"><ul><li>2025.6 ~ 현재 산업통상부 차관</li><li>산업통상자원부 대변인</li><li>산업통상자원부 장관정책보좌관</li></ul></div>
+      </div>
+
+      <div class="profile-row remarks">
+        <div class="row-label">주요발언<br>·최근활동</div>
+        <div class="row-body"><ul><li>산업·통상 정책과 성장 관련 주요 발언</li><li>기후·에너지 정책과 산업정책 연계 관련 발언</li></ul></div>
+      </div>
+    </section>
+    
+    <section class="paper profile-page" id="person-3">
+      <div class="paper-head">
+        <div class="company">산업통상부</div>
+        <div class="date">2026.10.12</div>
+      </div>
+
+      <h2>여한구 <span>통상교섭본부장</span></h2>
+
+      <div class="identity">
+        <div class="identity-table">
+          <div class="label">성명</div><div class="value">여한구 <span class="sub">(Yeo, Han-koo)</span> <span class="sub">· 1969년생</span></div>
+          <div class="label">직책</div><div class="value">통상교섭본부장</div>
+          <div class="label">출처</div><div class="value">공식 홈페이지/공개자료</div>
+        </div>
+        <div class="photo placeholder">PHOTO</div>
+      </div>
+
+      <div class="profile-row">
+        <div class="row-label">학력</div>
+        <div class="row-body"><ul><li>서울 경동고등학교 졸업</li><li>서울대학교 경영학과 학사</li><li>서울대학교 행정대학원 행정학 석사</li></ul></div>
+      </div>
+
+      <div class="profile-row career">
+        <div class="row-label">경력</div>
+        <div class="row-body"><ul><li>산업통상부 통상교섭본부장</li><li>미국 피터슨국제경제연구소 선임연구위원</li><li>산업통상자원부 통상교섭본부장</li></ul></div>
+      </div>
+
+      <div class="profile-row remarks">
+        <div class="row-label">주요발언<br>·최근활동</div>
+        <div class="row-body"><ul><li>글로벌 경제질서와 개방·협력 관련 주요 발언</li></ul></div>
+      </div>
+    </section>
+    
+    </section>
+    
+    <section class="company-view" data-company="mcee">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">정부기관 · 한국</div>
+          <h1>기후에너지환경부</h1>
+          <div class="en">Ministry of Climate, Energy and Environment</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">기후에너지환경부 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>기후에너지환경부 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="msit">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">정부기관 · 한국</div>
+          <h1>과학기술정보통신부</h1>
+          <div class="en">Ministry of Science and ICT</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">과학기술정보통신부 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>과학기술정보통신부 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="westinghouse">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 미국</div>
+          <h1>웨스팅하우스</h1>
+          <div class="en">Westinghouse</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">웨스팅하우스 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>웨스팅하우스 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="terrapower">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">SMR 개발사 · 미국</div>
+          <h1>테라파워</h1>
+          <div class="en">TerraPower</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">테라파워 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>테라파워 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="xenergy">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">SMR 개발사 · 미국</div>
+          <h1>엑스에너지</h1>
+          <div class="en">X-energy</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">엑스에너지 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>엑스에너지 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="blueenergy">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 미국</div>
+          <h1>블루에너지</h1>
+          <div class="en">Blue Energy</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">블루에너지 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>블루에너지 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="fermiamerica">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 미국</div>
+          <h1>퍼미 아메리카</h1>
+          <div class="en">Fermi America</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">퍼미 아메리카 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>퍼미 아메리카 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="enec">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · UAE</div>
+          <h1>UAE 원자력공사</h1>
+          <div class="en">ENEC (Emirates Nuclear Energy Company)</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">UAE 원자력공사 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>UAE 원자력공사 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="entergy">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 미국</div>
+          <h1>엔터지 서비스</h1>
+          <div class="en">Entergy Services</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">엔터지 서비스 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>엔터지 서비스 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="fanco">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">SMR 개발사 · 미국</div>
+          <h1>퍼스트 아메리칸 뉴클리어</h1>
+          <div class="en">FANCO (First American Nuclear Co.)</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">퍼스트 아메리칸 뉴클리어 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>퍼스트 아메리칸 뉴클리어 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="thorizon">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">SMR 개발사 · 네덜란드</div>
+          <h1>토리존</h1>
+          <div class="en">Thorizon</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">토리존 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>토리존 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="duke">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 미국</div>
+          <h1>듀크에너지</h1>
+          <div class="en">Duke Energy</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">듀크에너지 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>듀크에너지 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="pseg">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 미국</div>
+          <h1>PSEG</h1>
+          <div class="en">PSEG</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">PSEG 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>PSEG 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="genenergija">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">에너지 기업 · 슬로베니아</div>
+          <h1>젠 에너지</h1>
+          <div class="en">GEN Energija</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">젠 에너지 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>젠 에너지 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="whitingturner">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Whiting-Turner</h1>
+          <div class="en">Whiting-Turner</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Whiting-Turner 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Whiting-Turner 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="pcl">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 캐나다</div>
+          <h1>PCL Construction</h1>
+          <div class="en">PCL Construction</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">PCL Construction 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>PCL Construction 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="bartonmalow">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Barton Malow</h1>
+          <div class="en">Barton Malow</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Barton Malow 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Barton Malow 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="clayco">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Clayco</h1>
+          <div class="en">Clayco</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Clayco 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Clayco 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="alberici">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Alberici</h1>
+          <div class="en">Alberici</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Alberici 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Alberici 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="brandsafway">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>BrandSafway</h1>
+          <div class="en">BrandSafway</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">BrandSafway 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>BrandSafway 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="cbi">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>CB&amp;I</h1>
+          <div class="en">CB&amp;I</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">CB&amp;I 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>CB&amp;I 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="dayzimmermann">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Day &amp; Zimmermann</h1>
+          <div class="en">Day &amp; Zimmermann</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Day &amp; Zimmermann 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Day &amp; Zimmermann 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="dpr">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>DPR Construction</h1>
+          <div class="en">DPR Construction</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">DPR Construction 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>DPR Construction 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="evans">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Evans General Contractors</h1>
+          <div class="en">Evans General Contractors</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Evans General Contractors 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Evans General Contractors 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="walbridge">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Walbridge</h1>
+          <div class="en">Walbridge</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Walbridge 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Walbridge 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+    <section class="company-view" data-company="zachry">
+      <div class="company-summary">
+        <div>
+          <div class="eyebrow">건설 및 엔지니어링 기업 · 미국</div>
+          <h1>Zachry Group</h1>
+          <div class="en">Zachry Group</div>
+        </div>
+        <div class="status">연결 준비중</div>
+      </div>
+
+      <section class="paper org-page">
+        <div class="paper-head">
+          <div class="company">Zachry Group 조직도</div>
+          <div class="date">2026.10.12</div>
+        </div>
+
+        <h2>Zachry Group 조직도</h2>
+        <div class="org-grid"><div class="empty-box">조직도 연결 준비중</div></div>
+        
+        <div class="change-box">
+          <strong>최근 변경 감지</strong>
+          <ul><li>최초 데이터 등록</li></ul>
+        </div>
+        
+
+        <div class="source">
+          <div><b>Source</b> -</div>
+          <div><b>Organization</b> -</div>
+          <div><b>Leadership</b> -</div>
+          <div><b>Updated</b> 2026-10-12T20:45:02+09:00</div>
+        </div>
+      </section>
+
+      
+        <section class="paper">
+          <div class="empty-box big">
+            주요인사 프로필 연결 준비중<br>
+            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
+          </div>
+        </section>
+        
+    </section>
+    
+  </main>
+</div>
+<script>
+const buttons=[...document.querySelectorAll('.company-btn')];
+const views=[...document.querySelectorAll('.company-view')];
+
+function openCompany(key){
+  buttons.forEach(b=>b.classList.toggle('active',b.dataset.key===key));
+  views.forEach(v=>v.classList.toggle('active',v.dataset.company===key));
+  localStorage.setItem('profile-company',key);
+  window.scrollTo({top:0,behavior:'instant'});
+}
+buttons.forEach(b=>b.addEventListener('click',()=>openCompany(b.dataset.key)));
+
+const saved=localStorage.getItem('profile-company');
+const valid=buttons.some(b=>b.dataset.key===saved);
+openCompany(valid?saved:"holtec");
+</script>
+</body>
+</html>
