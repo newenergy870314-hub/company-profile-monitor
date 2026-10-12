@@ -15,20 +15,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "fortum",
@@ -46,20 +33,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "khnp",
@@ -77,20 +51,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "kepco",
@@ -108,20 +69,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "kaeri",
@@ -139,30 +87,17 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
-    "key": "motie",
+    "key": "motir",
     "category": "정부기관",
     "name_ko": "산업통상부",
-    "name_en": "Ministry of Trade, Industry and Energy",
+    "name_en": "Ministry of Trade, Industry and Resources",
     "country": "한국",
-    "official_url": "",
-    "organization_url": "",
-    "leadership_url": "",
+    "official_url": "https://www.motir.go.kr/",
+    "organization_url": "https://www.motir.go.kr/kor/26/headquarters",
+    "leadership_url": "https://www.motir.go.kr/kor/contents/70",
     "org_unit_selector": "",
     "org_name_selector": "",
     "org_leader_selector": "",
@@ -170,20 +105,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "mcee",
@@ -201,20 +123,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "msit",
@@ -232,20 +141,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "westinghouse",
@@ -263,20 +159,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "terrapower",
@@ -294,20 +177,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "xenergy",
@@ -325,20 +195,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "blueenergy",
@@ -356,20 +213,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "fermiamerica",
@@ -387,20 +231,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "enec",
@@ -418,20 +249,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "entergy",
@@ -449,20 +267,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "fanco",
@@ -480,20 +285,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "thorizon",
@@ -511,20 +303,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "duke",
@@ -542,20 +321,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "pseg",
@@ -573,20 +339,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "genenergija",
@@ -604,20 +357,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "whitingturner",
@@ -635,20 +375,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "pcl",
@@ -666,20 +393,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "bartonmalow",
@@ -697,20 +411,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "clayco",
@@ -728,20 +429,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "alberici",
@@ -759,20 +447,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "brandsafway",
@@ -790,20 +465,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "cbi",
@@ -821,20 +483,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "dayzimmermann",
@@ -852,20 +501,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "dpr",
@@ -883,20 +519,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "evans",
@@ -914,20 +537,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "walbridge",
@@ -945,20 +555,7 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   },
   {
     "key": "zachry",
@@ -976,19 +573,6 @@
     "person_name_selector": "",
     "person_title_selector": "",
     "person_image_selector": "img",
-    "person_detail_link_selector": "a",
-    "detail_education_selector": "",
-    "detail_career_selector": "",
-    "detail_remarks_selector": "",
-    "highlight_keywords": [
-      "nuclear",
-      "energy",
-      "power",
-      "smr",
-      "reactor",
-      "원전",
-      "원자력",
-      "에너지"
-    ]
+    "person_detail_link_selector": "a"
   }
 ]

@@ -1,0 +1,329 @@
+{
+  "key": "motir",
+  "category": "정부기관",
+  "name_ko": "산업통상부",
+  "name_en": "Ministry of Trade, Industry and Resources",
+  "country": "한국",
+  "official_url": "https://www.motir.go.kr/",
+  "organization_url": "https://www.motir.go.kr/kor/26/headquarters",
+  "leadership_url": "https://www.motir.go.kr/kor/contents/70",
+  "updated_at": "2026-10-12T22:07:25+09:00",
+  "status": "OK",
+  "source": "산업통상부 공식 홈페이지",
+  "organization": [
+    {
+      "id": "minister",
+      "name": "장관실",
+      "leader": "김정관",
+      "person_id": "kim_jungkwan",
+      "parent": "",
+      "level": 0,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "advisor",
+      "name": "장관정책보좌관",
+      "leader": "",
+      "person_id": "",
+      "parent": "minister",
+      "level": 1,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "spokesperson",
+      "name": "대변인",
+      "leader": "",
+      "person_id": "",
+      "parent": "minister",
+      "level": 1,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "audit",
+      "name": "감사관",
+      "leader": "",
+      "person_id": "",
+      "parent": "minister",
+      "level": 1,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "vice",
+      "name": "차관",
+      "leader": "문신학",
+      "person_id": "moon_shinhak",
+      "parent": "minister",
+      "level": 1,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "planning",
+      "name": "기획조정실",
+      "leader": "",
+      "person_id": "",
+      "parent": "vice",
+      "level": 2,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "industry",
+      "name": "산업정책실",
+      "leader": "",
+      "person_id": "",
+      "parent": "vice",
+      "level": 2,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "growth",
+      "name": "산업성장실",
+      "leader": "",
+      "person_id": "",
+      "parent": "vice",
+      "level": 2,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "security",
+      "name": "산업자원안보실",
+      "leader": "양기욱",
+      "person_id": "yang_kiuk",
+      "parent": "vice",
+      "level": 2,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "trade_head",
+      "name": "통상교섭본부장",
+      "leader": "여한구",
+      "person_id": "yeo_hankoo",
+      "parent": "minister",
+      "level": 1,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "trade_policy",
+      "name": "통상정책국",
+      "leader": "",
+      "person_id": "",
+      "parent": "trade_head",
+      "level": 2,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "trade_coop",
+      "name": "통상협력국",
+      "leader": "",
+      "person_id": "",
+      "parent": "trade_head",
+      "level": 2,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "trade_neg",
+      "name": "통상교섭실",
+      "leader": "",
+      "person_id": "",
+      "parent": "trade_head",
+      "level": 2,
+      "highlight": false,
+      "source_verified": true
+    },
+    {
+      "id": "investment",
+      "name": "무역투자실",
+      "leader": "강감찬",
+      "person_id": "kang_gamchan",
+      "parent": "trade_head",
+      "level": 2,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "nuclear",
+      "name": "원전전략기획관",
+      "leader": "김창희",
+      "person_id": "kim_changhee",
+      "parent": "investment",
+      "level": 3,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "nuclear_export",
+      "name": "원전수출진흥과",
+      "leader": "",
+      "person_id": "",
+      "parent": "nuclear",
+      "level": 4,
+      "highlight": true,
+      "source_verified": true
+    },
+    {
+      "id": "nuclear_coop",
+      "name": "원전수출협력과",
+      "leader": "",
+      "person_id": "",
+      "parent": "nuclear",
+      "level": 4,
+      "highlight": true,
+      "source_verified": true
+    }
+  ],
+  "people": [
+    {
+      "id": "kim_jungkwan",
+      "name": "김정관",
+      "title": "산업통상부 장관",
+      "name_en": "Kim, Jung-kwan",
+      "birth": "1968년생",
+      "image_url": "https://www.motir.go.kr/images/contents/sub/photo_person01.png",
+      "profile_url": "https://www.motir.go.kr/kor/contents/70",
+      "education": [
+        "광주제일고등학교 졸업",
+        "서울대학교 경제학과 학사",
+        "미국 미주리대학교 경제학 박사"
+      ],
+      "career": [
+        "산업통상부 장관",
+        "두산에너빌리티 사장",
+        "두산에너빌리티 부사장·마케팅부문장(CMO)",
+        "두산경영연구원 대표이사",
+        "제36회 행정고시"
+      ],
+      "remarks": [
+        "전력수요 대응과 원전 역할 관련 주요 발언",
+        "원전 수출 경쟁력 및 해외시장 관련 주요 발언"
+      ],
+      "source_verified": true
+    },
+    {
+      "id": "moon_shinhak",
+      "name": "문신학",
+      "title": "산업통상부 1차관",
+      "name_en": "Moon, Shin-hak",
+      "birth": "1967년생",
+      "image_url": "",
+      "profile_url": "",
+      "education": [
+        "조선대학교부속고등학교 졸업",
+        "서울대학교 경제학과 학사"
+      ],
+      "career": [
+        "산업통상부 1차관",
+        "산업통상자원부 대변인",
+        "산업통상자원부 장관정책보좌관",
+        "산업통상자원부 원전산업정책관",
+        "제38회 행정고시"
+      ],
+      "remarks": [
+        "산업·통상 정책과 성장 관련 주요 발언",
+        "기후·에너지 정책과 산업정책 연계 관련 주요 발언"
+      ]
+    },
+    {
+      "id": "yeo_hankoo",
+      "name": "여한구",
+      "title": "통상교섭본부장",
+      "name_en": "Yeo, Han-koo",
+      "birth": "1969년생",
+      "image_url": "",
+      "profile_url": "",
+      "education": [
+        "서울대학교 경영학과 학사",
+        "서울대학교 행정대학원 행정학 석사",
+        "미국 하버드대학교 케네디스쿨 행정학 석사",
+        "미국 하버드대학교 경영대학원 경영학 석사"
+      ],
+      "career": [
+        "산업통상부 통상교섭본부장",
+        "미국 피터슨국제경제연구소 선임연구위원",
+        "서울대학교 경영대학 초빙교수",
+        "산업통상자원부 통상교섭본부장"
+      ],
+      "remarks": [
+        "글로벌 통상환경과 개방·협력 관련 주요 발언"
+      ]
+    },
+    {
+      "id": "yang_kiuk",
+      "name": "양기욱",
+      "title": "산업자원안보실장",
+      "name_en": "Yang Ki-Uk",
+      "birth": "1972년생",
+      "image_url": "",
+      "profile_url": "",
+      "education": [
+        "서울대학교 경제학과 학사",
+        "미국 델라웨어대학교 에너지·환경정책학 석사"
+      ],
+      "career": [
+        "산업통상부 산업자원안보실장",
+        "산업통상자원부 원전전략기획관",
+        "산업통상자원부 FTA정책관",
+        "국무조정실 산업·과학·중기정책관"
+      ],
+      "remarks": [
+        "에너지·산업 안보와 원전 생태계 강화 관련 주요 발언",
+        "원전 해체 및 고준위 방폐물 정책 관련 주요 발언"
+      ]
+    },
+    {
+      "id": "kang_gamchan",
+      "name": "강감찬",
+      "title": "무역투자실장",
+      "name_en": "Kang, Gam-Chan",
+      "birth": "1973년생",
+      "image_url": "",
+      "profile_url": "",
+      "education": [
+        "서울대학교 경제학과 졸업",
+        "미국 카네기멜론대 정보학 석사"
+      ],
+      "career": [
+        "산업통상부 무역투자실장",
+        "산업통상자원부 산업정책관",
+        "산업통상자원부 무역안보정책관",
+        "산업통상자원부 전략산업정책과장"
+      ],
+      "remarks": [
+        "원전·SMR의 탄소감축 기여와 에너지 안보 관련 주요 발언",
+        "원전 산업의 수출 전략적 가치 관련 주요 발언"
+      ]
+    },
+    {
+      "id": "kim_changhee",
+      "name": "김창희",
+      "title": "원전전략기획관",
+      "name_en": "Kim Chang-hee",
+      "birth": "1971년생",
+      "image_url": "",
+      "profile_url": "",
+      "education": [
+        "고려대학교 경영학과 학사"
+      ],
+      "career": [
+        "산업통상부 원전전략기획관",
+        "KOTRA 외국인투자지원센터 국장",
+        "산업통상자원부 소재부품장비총괄과장",
+        "산업통상자원부 기술안보과장"
+      ],
+      "remarks": [
+        "원전 수출 및 산업정책 관련 주요 업무"
+      ]
+    }
+  ],
+  "errors": []
+}
