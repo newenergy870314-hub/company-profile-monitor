@@ -8,19 +8,39 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: company-profile-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: "pip"
+
       - name: Install dependencies
         run: pip install -r requirements_company_profile.txt
-      - name: Build company profile portal
+
+      - name: Build profile site
         run: python company_profile_portal_v3.py
-      - name: Commit generated profile site
+
+      - name: Verify output
+        run: |
+          test -s index.html
+          grep -q "PROFILE_DATA" index.html
+          grep -q "modalBg" index.html
+          grep -q "data-person" index.html
+
+      - name: Commit generated site and data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
