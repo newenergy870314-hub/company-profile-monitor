@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""기업·기관 조직도 + 주요인사 프로필 포털 FINAL V1.
+"""기업·기관 조직도 + 주요인사 프로필 포털 FINAL V2 AUTO.
 
 - 32개 기업·기관 마스터
 - 공식 홈페이지 우선 수집
@@ -353,11 +353,20 @@ def detect_changes(old: Optional[dict], new: dict) -> list[dict]:
 
 
 def append_change_log(company: dict, changes: list[dict]):
+    """변경이력 저장 실패가 전체 웹 생성 실패로 이어지지 않도록 보호."""
     if not changes:
         return
-    log = load_json(CHANGE_LOG) or []
-    log.append({"checked_at":NOW.isoformat(timespec="seconds"),"key":company["key"],"company":company["name_ko"],"changes":changes})
-    save_json(CHANGE_LOG, log[-1000:])
+    try:
+        log = load_json(CHANGE_LOG) or []
+        log.append({
+            "checked_at": NOW.isoformat(timespec="seconds"),
+            "key": company["key"],
+            "company": company["name_ko"],
+            "changes": changes,
+        })
+        save_json(CHANGE_LOG, log[-1000:])
+    except Exception as e:
+        print(f"[WARN] change_log 저장 실패: {e}")
 
 
 def person_map(data: dict) -> dict[str,dict]:
@@ -382,10 +391,13 @@ def render_org_tree(data: dict) -> str:
             pid = n.get("person_id","")
             clickable = bool(pid and pid in people)
             cls = "org-node" + (" hot" if n.get("highlight") else "") + (" clickable" if clickable else "")
-            onclick = f' onclick="openProfile(\'{esc(data["key"])}\',\'{esc(pid)}\')"' if clickable else ""
+            data_attrs = (
+                f' data-company="{esc(data["key"])}" data-person="{esc(pid)}"'
+                if clickable else ""
+            )
             hint = '<div class="click-hint">프로필 보기</div>' if clickable else ""
             out.append(
-                f'<div class="org-branch"><button type="button" class="{cls}"{onclick}>'
+                f'<div class="org-branch"><button type="button" class="{cls}"{data_attrs}>'
                 f'<div class="org-name">{esc(n.get("name"))}</div>'
                 f'<div class="org-leader">{esc(n.get("leader"))}</div>{hint}</button>'
                 f'{rec(n.get("id",""))}</div>'
@@ -447,25 +459,124 @@ def build_site(all_data: list[dict], changes_map: dict[str,list[dict]]):
 .nav-cat{{font-size:11px;color:#99afc8;font-weight:900;margin:18px 8px 6px}}.company-btn{{display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:9px 10px;border-radius:7px;cursor:pointer}}.company-btn:hover,.company-btn.active{{background:#24496f}}.company-btn span{{display:inline-block;width:18px;color:#ffd500}}
 .main{{padding:22px}}.company-view{{display:none;max-width:1120px;margin:0 auto}}.company-view.active{{display:block}}.company-summary{{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}}.company-summary h1{{margin:4px 0 2px;font-size:28px}}.eyebrow{{font-size:12px;color:#687583;font-weight:800}}.en{{font-size:13px;color:#687583}}.status{{background:#dceaf8;color:#174d82;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}}
 .paper{{background:#fff;border-radius:12px;padding:22px;box-shadow:0 2px 14px rgba(0,0,0,.06)}}.paper-head{{display:flex;justify-content:space-between;border-bottom:2px solid #989fa7;padding-bottom:9px;margin-bottom:14px}}.paper-title{{font-size:21px;font-weight:900}}.date{{font-size:13px;color:#555}}.guide{{background:#f4f7fa;border-left:4px solid #1b548a;padding:10px 12px;font-size:12px;margin-bottom:15px}}
-.org-scroll{{overflow:auto;padding:4px 0 16px}}.org-canvas{{min-width:980px}}.org-level{{display:flex;justify-content:center;gap:14px;align-items:flex-start;margin:12px 0}}.org-branch{{display:flex;flex-direction:column;align-items:center;min-width:130px}}.org-branch>.org-level{{border-top:2px solid #cbd2d9;padding-top:12px}}.org-node{{min-width:130px;max-width:175px;border:1px solid #cbd2d9;background:#f5f7f9;border-radius:7px;padding:10px 8px;text-align:center;color:#15191f}}.org-node.hot{{background:#fff2aa;border:2px dashed #d74343}}.org-node.clickable{{cursor:pointer}}.org-node.clickable:hover{{background:#eaf4fd;border-color:#76a8d3}}.org-name{{font-size:12px;font-weight:800}}.org-leader{{font-size:14px;font-weight:900;color:#174d82;margin-top:4px}}.click-hint{{font-size:9px;color:#7d8995;margin-top:4px}}.empty{{padding:60px 20px;border:1px dashed #aeb7c1;text-align:center;color:#7d8791}}
+.org-scroll{{overflow:auto;padding:4px 0 16px}}.org-canvas{{min-width:980px}}.org-level{{display:flex;justify-content:center;gap:14px;align-items:flex-start;margin:12px 0}}.org-branch{{display:flex;flex-direction:column;align-items:center;min-width:130px}}.org-branch>.org-level{{border-top:2px solid #cbd2d9;padding-top:12px}}.org-node{{min-width:130px;max-width:175px;border:1px solid #cbd2d9;background:#f5f7f9;border-radius:7px;padding:10px 8px;text-align:center;color:#15191f}}.org-node.hot{{background:#fff2aa;border:2px dashed #d74343}}.org-node.clickable{{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:rgba(23,77,130,.16)}}.org-node.clickable:hover{{background:#eaf4fd;border-color:#76a8d3}}.org-node.clickable:active{{transform:scale(.97);background:#dceeff}}.org-name{{font-size:12px;font-weight:800}}.org-leader{{font-size:14px;font-weight:900;color:#174d82;margin-top:4px}}.click-hint{{font-size:9px;color:#7d8995;margin-top:4px}}.empty{{padding:60px 20px;border:1px dashed #aeb7c1;text-align:center;color:#7d8791}}
 .change-box{{margin-top:16px;background:#fff7d6;border:1px solid #e4cb66;padding:12px}}.change-box ul{{margin:7px 0 0;padding-left:20px}}.source{{margin-top:18px;font-size:11px;color:#67717c;line-height:1.65;word-break:break-all}}
 .modal-bg{{position:fixed;inset:0;background:rgba(7,22,39,.62);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}}.modal-bg.open{{display:flex}}.modal{{width:min(900px,96vw);max-height:92vh;background:#fff;border-radius:14px;overflow:auto;box-shadow:0 18px 60px rgba(0,0,0,.3)}}.modal-head{{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #d8dde3;display:flex;justify-content:space-between;align-items:center;padding:14px 18px}}.modal-head strong{{font-size:19px}}.close{{width:36px;height:36px;border:0;border-radius:50%;background:#edf1f5;font-size:22px;cursor:pointer}}
 .profile{{padding:18px}}.profile-title{{font-size:27px;font-weight:900;margin:0 0 15px}}.profile-title span{{font-size:18px;margin-left:8px}}.identity{{display:grid;grid-template-columns:1fr 180px;gap:14px}}.identity-table{{display:grid;grid-template-columns:100px 1fr;border-top:1px solid #d2d6db;border-left:1px solid #d2d6db}}.identity-table>div{{border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;padding:14px}}.label{{background:#f5f5f5;font-weight:900;text-align:center}}.photo{{width:180px;height:210px;border:1px solid #d2d6db;background:#f4f6f8;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#8b949e;font-weight:800}}.row{{display:grid;grid-template-columns:100px 1fr;border-left:1px solid #d2d6db;border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db}}.row-label{{background:#f5f5f5;border-right:1px solid #d2d6db;display:flex;align-items:center;justify-content:center;font-weight:900;text-align:center;padding:12px}}.row-body{{padding:15px 18px;line-height:1.65}}.row-body ul{{margin:0;padding-left:20px}}.profile-source{{margin-top:12px;font-size:11px;color:#67717c}}
 @media(max-width:850px){{.layout{{display:block}}.sidebar{{height:auto;position:relative;top:auto;display:flex;overflow-x:auto;padding:9px}}.nav-cat{{display:none}}.company-btn{{min-width:150px;white-space:nowrap}}.main{{padding:10px}}.paper{{padding:14px;border-radius:8px}}.company-summary h1{{font-size:23px}}.identity{{grid-template-columns:1fr 110px}}.photo{{width:110px;height:140px}}.identity-table{{grid-template-columns:74px 1fr}}.row{{grid-template-columns:74px 1fr}}.profile-title{{font-size:22px}}.profile-title span{{display:block;margin:4px 0 0;font-size:15px}}}}
 </style></head><body>
-<div class="topbar"><b>기업·기관 조직도 및 주요인사 프로필</b><span style="font-size:11px">Official-site first</span></div>
+<div class="topbar"><b>기업·기관 조직도 및 주요인사 프로필</b><span style="font-size:11px">AUTO V2 · {TODAY}</span></div>
 <div class="layout"><aside class="sidebar">{''.join(nav)}</aside><main class="main">{views}</main></div>
 <div class="modal-bg" id="modalBg" onclick="closeByBg(event)"><div class="modal"><div class="modal-head"><strong id="modalHead">주요인사 프로필</strong><button class="close" onclick="closeProfile()">×</button></div><div class="profile" id="profileBody"></div></div></div>
 <script>
 const PROFILE_DATA = {js_json(profiles)};
-const buttons=[...document.querySelectorAll('.company-btn')]; const views=[...document.querySelectorAll('.company-view')];
-function openCompany(key){{buttons.forEach(b=>b.classList.toggle('active',b.dataset.key===key));views.forEach(v=>v.classList.toggle('active',v.dataset.company===key));localStorage.setItem('company-profile-selected',key);window.scrollTo({{top:0,behavior:'instant'}});}}
-buttons.forEach(b=>b.addEventListener('click',()=>openCompany(b.dataset.key)));
-function escapeHtml(s){{return String(s||'').replace(/[&<>"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}}[c]));}}
-function listHtml(arr){{if(!arr||!arr.length)return '<div style="color:#89939c">확인된 정보 없음</div>';return '<ul>'+arr.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>';}}
-function openProfile(companyKey,personId){{const p=(PROFILE_DATA[companyKey]||{{}})[personId];if(!p)return;document.getElementById('modalHead').textContent=p.name+' '+p.title;const photo=p.image_url?`<img class="photo" src="${{escapeHtml(p.image_url)}}" alt="${{escapeHtml(p.name)}}">`:'<div class="photo">PHOTO</div>';const source=p.profile_url?`<a href="${{escapeHtml(p.profile_url)}}" target="_blank">공식 프로필</a>`:'공식 홈페이지/공개자료';document.getElementById('profileBody').innerHTML=`<div class="profile-title">${{escapeHtml(p.name)}} <span>${{escapeHtml(p.title)}}</span></div><div class="identity"><div class="identity-table"><div class="label">성명</div><div>${{escapeHtml(p.name)}} ${{p.name_en?'('+escapeHtml(p.name_en)+')':''}} ${{p.birth?'· '+escapeHtml(p.birth):''}}</div><div class="label">직책</div><div>${{escapeHtml(p.title)}}</div><div class="label">출처</div><div>${{source}}</div></div>${{photo}}</div><div class="row"><div class="row-label">학력</div><div class="row-body">${{listHtml(p.education)}}</div></div><div class="row"><div class="row-label">경력</div><div class="row-body">${{listHtml(p.career)}}</div></div><div class="row"><div class="row-label">주요발언<br>·최근활동</div><div class="row-body">${{listHtml(p.remarks)}}</div></div><div class="profile-source">※ 공식 홈페이지를 우선으로 하며 미공개 항목은 등록된 보완자료를 사용합니다.</div>`;document.getElementById('modalBg').classList.add('open');document.body.style.overflow='hidden';}}
-function closeProfile(){{document.getElementById('modalBg').classList.remove('open');document.body.style.overflow='';}} function closeByBg(e){{if(e.target.id==='modalBg')closeProfile();}} document.addEventListener('keydown',e=>{{if(e.key==='Escape')closeProfile();}});
-const saved=localStorage.getItem('company-profile-selected');openCompany(buttons.some(b=>b.dataset.key===saved)?saved:{json.dumps(first)});
+const buttons=[...document.querySelectorAll('.company-btn')];
+const views=[...document.querySelectorAll('.company-view')];
+const modalBg=document.getElementById('modalBg');
+const modalHead=document.getElementById('modalHead');
+const profileBody=document.getElementById('profileBody');
+
+function openCompany(key){{
+  buttons.forEach(b=>b.classList.toggle('active',b.dataset.key===key));
+  views.forEach(v=>v.classList.toggle('active',v.dataset.company===key));
+  try{{localStorage.setItem('company-profile-selected',key);}}catch(e){{}}
+  try{{window.scrollTo({{top:0,behavior:'instant'}});}}catch(e){{window.scrollTo(0,0);}}
+}}
+
+function escapeHtml(s){{
+  return String(s||'').replace(/[&<>"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}}[c]));
+}}
+
+function listHtml(arr){{
+  if(!arr||!arr.length) return '<div style="color:#89939c">확인된 정보 없음</div>';
+  return '<ul>'+arr.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>';
+}}
+
+function openProfile(companyKey,personId){{
+  const companyProfiles=PROFILE_DATA[companyKey]||{{}};
+  const p=companyProfiles[personId];
+
+  if(!p){{
+    console.warn('[PROFILE] not found', companyKey, personId);
+    alert('프로필 정보를 찾지 못했습니다. 페이지를 새로고침해 주세요.');
+    return;
+  }}
+
+  modalHead.textContent=p.name+' '+p.title;
+
+  const photo=p.image_url
+    ? `<img class="photo" src="${{escapeHtml(p.image_url)}}" alt="${{escapeHtml(p.name)}}"
+         onerror="this.outerHTML='<div class=&quot;photo&quot;>PHOTO</div>'">`
+    : '<div class="photo">PHOTO</div>';
+
+  const source=p.profile_url
+    ? `<a href="${{escapeHtml(p.profile_url)}}" target="_blank" rel="noopener">공식 프로필</a>`
+    : '공식 홈페이지/공개자료';
+
+  profileBody.innerHTML=`
+    <div class="profile-title">${{escapeHtml(p.name)}} <span>${{escapeHtml(p.title)}}</span></div>
+    <div class="identity">
+      <div class="identity-table">
+        <div class="label">성명</div>
+        <div>${{escapeHtml(p.name)}} ${{p.name_en?'('+escapeHtml(p.name_en)+')':''}} ${{p.birth?'· '+escapeHtml(p.birth):''}}</div>
+        <div class="label">직책</div>
+        <div>${{escapeHtml(p.title)}}</div>
+        <div class="label">출처</div>
+        <div>${{source}}</div>
+      </div>
+      ${{photo}}
+    </div>
+    <div class="row"><div class="row-label">학력</div><div class="row-body">${{listHtml(p.education)}}</div></div>
+    <div class="row"><div class="row-label">경력</div><div class="row-body">${{listHtml(p.career)}}</div></div>
+    <div class="row"><div class="row-label">주요발언<br>·최근활동</div><div class="row-body">${{listHtml(p.remarks)}}</div></div>
+    <div class="profile-source">※ 공식 홈페이지를 우선으로 하며 미공개 항목은 등록된 보완자료를 사용합니다.</div>
+  `;
+
+  modalBg.classList.add('open');
+  document.body.style.overflow='hidden';
+}}
+
+function closeProfile(){{
+  modalBg.classList.remove('open');
+  document.body.style.overflow='';
+}}
+
+function closeByBg(e){{
+  if(e.target===modalBg) closeProfile();
+}}
+
+/* 회사 메뉴 + 조직도 인물 클릭을 한 곳에서 처리.
+   HTML이 갱신돼도 이벤트가 자동으로 적용되므로 모바일에서 더 안정적임. */
+document.addEventListener('click',function(e){{
+  const companyBtn=e.target.closest('.company-btn');
+  if(companyBtn){{
+    e.preventDefault();
+    openCompany(companyBtn.dataset.key);
+    return;
+  }}
+
+  const personBtn=e.target.closest('.org-node.clickable[data-company][data-person]');
+  if(personBtn){{
+    e.preventDefault();
+    e.stopPropagation();
+    openProfile(personBtn.dataset.company,personBtn.dataset.person);
+    return;
+  }}
+
+  if(e.target===modalBg) closeProfile();
+}},{{passive:false}});
+
+document.addEventListener('keydown',e=>{{
+  if(e.key==='Escape') closeProfile();
+}});
+
+let saved='';
+try{{saved=localStorage.getItem('company-profile-selected')||'';}}catch(e){{}}
+/* 첫 접속에서는 프로필 기능을 바로 확인할 수 있도록 산업통상부를 기본 화면으로 사용 */
+const defaultKey = buttons.some(b=>b.dataset.key==='motir') ? 'motir' : {json.dumps(first)};
+openCompany(buttons.some(b=>b.dataset.key===saved)?saved:defaultKey);
+
+console.log('[Company Profile Portal] AUTO V2 loaded', new Date().toISOString());
 </script></body></html>'''
     (BASE_DIR / "index.html").write_text(page, encoding="utf-8")
     (SITE_DIR / "index.html").write_text(page, encoding="utf-8")
@@ -474,7 +585,7 @@ const saved=localStorage.getItem('company-profile-selected');openCompany(buttons
 def main():
     all_data, changes_map = [], {}
     print("="*72)
-    print("기업·기관 조직도 / 주요인사 프로필 포털 FINAL V1")
+    print("기업·기관 조직도 / 주요인사 프로필 포털 FINAL V2 AUTO")
     print("="*72)
     for i,t in enumerate(TARGETS,1):
         print(f"[{i:02d}/{len(TARGETS)}] {t.name_ko} ... ", end="", flush=True)
