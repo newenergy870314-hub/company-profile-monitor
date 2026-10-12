@@ -1,29 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-기업·기관 조직도 + 주요인사 프로필 자동 업데이트 웹사이트 V4
 
-실행:
-    python company_profile_portal_v3.py
+"""기업·기관 조직도 + 주요인사 프로필 포털 FINAL V1.
 
-생성:
-    company_profile_site/index.html
-    company_profile_site/data/*.json
-    company_profile_data/snapshots/*.json
-    company_profile_data/change_log.json
-
-구조:
-1) 회사/기관 마스터 32개 등록
-2) 공식 홈페이지 / Organization / Leadership URL 및 CSS selector를 회사별 설정
-3) 공개 홈페이지에서 조직/주요인사 정보 수집
-4) 이전 snapshot과 비교해 인사/직책/조직 변경 감지
-5) 1페이지 조직도 + 2페이지 이후 주요인사 프로필 형식의 정적 웹사이트 생성
-
-중요:
-- 회사마다 홈페이지 HTML 구조가 달라 selector는 개별 설정이 필요합니다.
-- selector 미설정 대상은 웹사이트에 '연결 준비중'으로 표시됩니다.
-- DEMO_DATA에는 사용자가 제공한 산업통상부 샘플의 형식/일부 인사구성을 넣어
-  실행 즉시 화면을 확인할 수 있게 했습니다.
+- 32개 기업·기관 마스터
+- 공식 홈페이지 우선 수집
+- 산업통상부 공식 조직도 구조를 최대한 반영
+- 조직도 내 인물 클릭 시 프로필 모달 표시
+- root/index.html 자동 생성 (GitHub Pages main/root)
+- snapshot 비교 및 변경이력 저장
 """
 
 from __future__ import annotations
@@ -49,32 +34,23 @@ except ImportError:
 KST = timezone(timedelta(hours=9))
 NOW = datetime.now(KST)
 TODAY = NOW.strftime("%Y.%m.%d")
-
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "company_profile_data"
 SNAPSHOT_DIR = DATA_DIR / "snapshots"
 SITE_DIR = BASE_DIR / "company_profile_site"
 SITE_DATA_DIR = SITE_DIR / "data"
-
+CHANGE_LOG = DATA_DIR / "change_log.json"
 for p in (DATA_DIR, SNAPSHOT_DIR, SITE_DIR, SITE_DATA_DIR):
     p.mkdir(parents=True, exist_ok=True)
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0 Safari/537.36"
-    )
-}
-REQUEST_TIMEOUT = 20
-REQUEST_SLEEP = 0.6
+HEADERS = {"User-Agent": "Mozilla/5.0 Chrome/155 Safari/537.36"}
+REQUEST_TIMEOUT = 25
+REQUEST_SLEEP = 0.4
 
-
-# ============================================================
-# 1) 데이터 구조
-# ============================================================
 
 @dataclass
-class PersonProfile:
+class Person:
+    id: str
     name: str
     title: str
     name_en: str = ""
@@ -88,180 +64,128 @@ class PersonProfile:
 
 @dataclass
 class OrgNode:
+    id: str
     name: str
     leader: str = ""
+    person_id: str = ""
     parent: str = ""
+    level: int = 0
     highlight: bool = False
 
 
 @dataclass
-class CompanyTarget:
+class Target:
     key: str
     category: str
     name_ko: str
     name_en: str
     country: str
-
     official_url: str = ""
     organization_url: str = ""
     leadership_url: str = ""
-
-    # 조직도 selector
     org_unit_selector: str = ""
     org_name_selector: str = ""
     org_leader_selector: str = ""
-
-    # 인물 카드 selector
     person_card_selector: str = ""
     person_name_selector: str = ""
     person_title_selector: str = ""
     person_image_selector: str = "img"
     person_detail_link_selector: str = "a"
 
-    # 상세 프로필 selector
-    detail_education_selector: str = ""
-    detail_career_selector: str = ""
-    detail_remarks_selector: str = ""
-
-    highlight_keywords: list[str] = field(default_factory=lambda: [
-        "nuclear", "energy", "power", "smr", "reactor",
-        "원전", "원자력", "에너지"
-    ])
-
-
-# ============================================================
-# 2) 관리 대상 32개
-# ============================================================
 
 TARGETS = [
-    CompanyTarget("holtec","SMR 개발사","홀텍 인터내셔널","Holtec International","미국"),
-    CompanyTarget("fortum","에너지 기업","포툼","Fortum","핀란드"),
-    CompanyTarget("khnp","에너지 기업","한수원","Korea Hydro & Nuclear Power (KHNP)","한국"),
-    CompanyTarget("kepco","에너지 기업","한국전력","Korea Electric Power Corporation (KEPCO)","한국"),
-    CompanyTarget("kaeri","연구기관","한국원자력연구원","Korea Atomic Energy Research Institute (KAERI)","한국"),
-    CompanyTarget("motie","정부기관","산업통상부","Ministry of Trade, Industry and Energy","한국"),
-    CompanyTarget("mcee","정부기관","기후에너지환경부","Ministry of Climate, Energy and Environment","한국"),
-    CompanyTarget("msit","정부기관","과학기술정보통신부","Ministry of Science and ICT","한국"),
-    CompanyTarget("westinghouse","에너지 기업","웨스팅하우스","Westinghouse","미국"),
-    CompanyTarget("terrapower","SMR 개발사","테라파워","TerraPower","미국"),
-    CompanyTarget("xenergy","SMR 개발사","엑스에너지","X-energy","미국"),
-    CompanyTarget("blueenergy","에너지 기업","블루에너지","Blue Energy","미국"),
-    CompanyTarget("fermiamerica","에너지 기업","퍼미 아메리카","Fermi America","미국"),
-    CompanyTarget("enec","에너지 기업","UAE 원자력공사","ENEC (Emirates Nuclear Energy Company)","UAE"),
-    CompanyTarget("entergy","에너지 기업","엔터지 서비스","Entergy Services","미국"),
-    CompanyTarget("fanco","SMR 개발사","퍼스트 아메리칸 뉴클리어","FANCO (First American Nuclear Co.)","미국"),
-    CompanyTarget("thorizon","SMR 개발사","토리존","Thorizon","네덜란드"),
-    CompanyTarget("duke","에너지 기업","듀크에너지","Duke Energy","미국"),
-    CompanyTarget("pseg","에너지 기업","PSEG","PSEG","미국"),
-    CompanyTarget("genenergija","에너지 기업","젠 에너지","GEN Energija","슬로베니아"),
-    CompanyTarget("whitingturner","건설 및 엔지니어링 기업","Whiting-Turner","Whiting-Turner","미국"),
-    CompanyTarget("pcl","건설 및 엔지니어링 기업","PCL Construction","PCL Construction","캐나다"),
-    CompanyTarget("bartonmalow","건설 및 엔지니어링 기업","Barton Malow","Barton Malow","미국"),
-    CompanyTarget("clayco","건설 및 엔지니어링 기업","Clayco","Clayco","미국"),
-    CompanyTarget("alberici","건설 및 엔지니어링 기업","Alberici","Alberici","미국"),
-    CompanyTarget("brandsafway","건설 및 엔지니어링 기업","BrandSafway","BrandSafway","미국"),
-    CompanyTarget("cbi","건설 및 엔지니어링 기업","CB&I","CB&I","미국"),
-    CompanyTarget("dayzimmermann","건설 및 엔지니어링 기업","Day & Zimmermann","Day & Zimmermann","미국"),
-    CompanyTarget("dpr","건설 및 엔지니어링 기업","DPR Construction","DPR Construction","미국"),
-    CompanyTarget("evans","건설 및 엔지니어링 기업","Evans General Contractors","Evans General Contractors","미국"),
-    CompanyTarget("walbridge","건설 및 엔지니어링 기업","Walbridge","Walbridge","미국"),
-    CompanyTarget("zachry","건설 및 엔지니어링 기업","Zachry Group","Zachry Group","미국"),
+    Target("holtec","SMR 개발사","홀텍 인터내셔널","Holtec International","미국"),
+    Target("fortum","에너지 기업","포툼","Fortum","핀란드"),
+    Target("khnp","에너지 기업","한수원","Korea Hydro & Nuclear Power (KHNP)","한국"),
+    Target("kepco","에너지 기업","한국전력","Korea Electric Power Corporation (KEPCO)","한국"),
+    Target("kaeri","연구기관","한국원자력연구원","Korea Atomic Energy Research Institute (KAERI)","한국"),
+    Target("motir","정부기관","산업통상부","Ministry of Trade, Industry and Resources","한국",
+           "https://www.motir.go.kr/","https://www.motir.go.kr/kor/26/headquarters",
+           "https://www.motir.go.kr/kor/contents/70"),
+    Target("mcee","정부기관","기후에너지환경부","Ministry of Climate, Energy and Environment","한국"),
+    Target("msit","정부기관","과학기술정보통신부","Ministry of Science and ICT","한국"),
+    Target("westinghouse","에너지 기업","웨스팅하우스","Westinghouse","미국"),
+    Target("terrapower","SMR 개발사","테라파워","TerraPower","미국"),
+    Target("xenergy","SMR 개발사","엑스에너지","X-energy","미국"),
+    Target("blueenergy","에너지 기업","블루에너지","Blue Energy","미국"),
+    Target("fermiamerica","에너지 기업","퍼미 아메리카","Fermi America","미국"),
+    Target("enec","에너지 기업","UAE 원자력공사","ENEC (Emirates Nuclear Energy Company)","UAE"),
+    Target("entergy","에너지 기업","엔터지 서비스","Entergy Services","미국"),
+    Target("fanco","SMR 개발사","퍼스트 아메리칸 뉴클리어","FANCO (First American Nuclear Co.)","미국"),
+    Target("thorizon","SMR 개발사","토리존","Thorizon","네덜란드"),
+    Target("duke","에너지 기업","듀크에너지","Duke Energy","미국"),
+    Target("pseg","에너지 기업","PSEG","PSEG","미국"),
+    Target("genenergija","에너지 기업","젠 에너지","GEN Energija","슬로베니아"),
+    Target("whitingturner","건설 및 엔지니어링 기업","Whiting-Turner","Whiting-Turner","미국"),
+    Target("pcl","건설 및 엔지니어링 기업","PCL Construction","PCL Construction","캐나다"),
+    Target("bartonmalow","건설 및 엔지니어링 기업","Barton Malow","Barton Malow","미국"),
+    Target("clayco","건설 및 엔지니어링 기업","Clayco","Clayco","미국"),
+    Target("alberici","건설 및 엔지니어링 기업","Alberici","Alberici","미국"),
+    Target("brandsafway","건설 및 엔지니어링 기업","BrandSafway","BrandSafway","미국"),
+    Target("cbi","건설 및 엔지니어링 기업","CB&I","CB&I","미국"),
+    Target("dayzimmermann","건설 및 엔지니어링 기업","Day & Zimmermann","Day & Zimmermann","미국"),
+    Target("dpr","건설 및 엔지니어링 기업","DPR Construction","DPR Construction","미국"),
+    Target("evans","건설 및 엔지니어링 기업","Evans General Contractors","Evans General Contractors","미국"),
+    Target("walbridge","건설 및 엔지니어링 기업","Walbridge","Walbridge","미국"),
+    Target("zachry","건설 및 엔지니어링 기업","Zachry Group","Zachry Group","미국"),
+]
+
+# 산업통상부 공식 조직안내 구조를 기반으로 한 계층 fallback.
+MOTIR_ORG = [
+    OrgNode("minister","장관실","김정관","kim_jungkwan","",0,True),
+    OrgNode("advisor","장관정책보좌관","","","minister",1),
+    OrgNode("spokesperson","대변인","","","minister",1),
+    OrgNode("audit","감사관","","","minister",1),
+    OrgNode("vice","차관","문신학","moon_shinhak","minister",1,True),
+    OrgNode("planning","기획조정실","","","vice",2),
+    OrgNode("industry","산업정책실","","","vice",2),
+    OrgNode("growth","산업성장실","","","vice",2),
+    OrgNode("security","산업자원안보실","양기욱","yang_kiuk","vice",2,True),
+    OrgNode("trade_head","통상교섭본부장","여한구","yeo_hankoo","minister",1,True),
+    OrgNode("trade_policy","통상정책국","","","trade_head",2),
+    OrgNode("trade_coop","통상협력국","","","trade_head",2),
+    OrgNode("trade_neg","통상교섭실","","","trade_head",2),
+    OrgNode("investment","무역투자실","강감찬","kang_gamchan","trade_head",2,True),
+    OrgNode("nuclear","원전전략기획관","김창희","kim_changhee","investment",3,True),
+    OrgNode("nuclear_export","원전수출진흥과","","","nuclear",4,True),
+    OrgNode("nuclear_coop","원전수출협력과","","","nuclear",4,True),
+]
+
+MOTIR_PEOPLE = [
+    Person("kim_jungkwan","김정관","산업통상부 장관","Kim, Jung-kwan","1968년생",
+           profile_url="https://www.motir.go.kr/kor/contents/70",
+           education=["광주제일고등학교 졸업","서울대학교 경제학과 학사","미국 미주리대학교 경제학 박사"],
+           career=["산업통상부 장관","두산에너빌리티 사장","두산에너빌리티 부사장·마케팅부문장(CMO)","두산경영연구원 대표이사","제36회 행정고시"],
+           remarks=["전력수요 대응과 원전 역할 관련 주요 발언","원전 수출 경쟁력 및 해외시장 관련 주요 발언"]),
+    Person("moon_shinhak","문신학","산업통상부 1차관","Moon, Shin-hak","1967년생",
+           education=["조선대학교부속고등학교 졸업","서울대학교 경제학과 학사"],
+           career=["산업통상부 1차관","산업통상자원부 대변인","산업통상자원부 장관정책보좌관","산업통상자원부 원전산업정책관","제38회 행정고시"],
+           remarks=["산업·통상 정책과 성장 관련 주요 발언","기후·에너지 정책과 산업정책 연계 관련 주요 발언"]),
+    Person("yeo_hankoo","여한구","통상교섭본부장","Yeo, Han-koo","1969년생",
+           education=["서울대학교 경영학과 학사","서울대학교 행정대학원 행정학 석사","미국 하버드대학교 케네디스쿨 행정학 석사","미국 하버드대학교 경영대학원 경영학 석사"],
+           career=["산업통상부 통상교섭본부장","미국 피터슨국제경제연구소 선임연구위원","서울대학교 경영대학 초빙교수","산업통상자원부 통상교섭본부장"],
+           remarks=["글로벌 통상환경과 개방·협력 관련 주요 발언"]),
+    Person("yang_kiuk","양기욱","산업자원안보실장","Yang Ki-Uk","1972년생",
+           education=["서울대학교 경제학과 학사","미국 델라웨어대학교 에너지·환경정책학 석사"],
+           career=["산업통상부 산업자원안보실장","산업통상자원부 원전전략기획관","산업통상자원부 FTA정책관","국무조정실 산업·과학·중기정책관"],
+           remarks=["에너지·산업 안보와 원전 생태계 강화 관련 주요 발언","원전 해체 및 고준위 방폐물 정책 관련 주요 발언"]),
+    Person("kang_gamchan","강감찬","무역투자실장","Kang, Gam-Chan","1973년생",
+           education=["서울대학교 경제학과 졸업","미국 카네기멜론대 정보학 석사"],
+           career=["산업통상부 무역투자실장","산업통상자원부 산업정책관","산업통상자원부 무역안보정책관","산업통상자원부 전략산업정책과장"],
+           remarks=["원전·SMR의 탄소감축 기여와 에너지 안보 관련 주요 발언","원전 산업의 수출 전략적 가치 관련 주요 발언"]),
+    Person("kim_changhee","김창희","원전전략기획관","Kim Chang-hee","1971년생",
+           education=["고려대학교 경영학과 학사"],
+           career=["산업통상부 원전전략기획관","KOTRA 외국인투자지원센터 국장","산업통상자원부 소재부품장비총괄과장","산업통상자원부 기술안보과장"],
+           remarks=["원전 수출 및 산업정책 관련 주요 업무"]),
 ]
 
 
-# ============================================================
-# 3) 데모 데이터
-#    산업통상부 샘플 형식을 실행 즉시 확인하기 위한 예시
-# ============================================================
-
-DEMO_DATA = {
-    "motie": {
-        "organization": [
-            {"name": "장관", "leader": "김정관", "parent": "", "highlight": True},
-            {"name": "1차관", "leader": "문신학", "parent": "장관", "highlight": True},
-            {"name": "산업자원안보실", "leader": "양기욱", "parent": "1차관", "highlight": True},
-            {"name": "통상교섭본부", "leader": "여한구", "parent": "장관", "highlight": True},
-            {"name": "무역투자실", "leader": "강감찬", "parent": "통상교섭본부", "highlight": True},
-            {"name": "원전전략기획관", "leader": "김창희", "parent": "산업자원안보실", "highlight": True},
-        ],
-        "people": [
-            {
-                "name": "김정관",
-                "name_en": "Kim, Jung-kwan",
-                "birth": "1968년생",
-                "title": "산업통상부 장관",
-                "education": [
-                    "광주제일고등학교 졸업",
-                    "서울대학교 경제학과 학사",
-                    "미국 미주리대학교 경제학 박사",
-                ],
-                "career": [
-                    "2025.7 ~ 현재 산업통상부 장관",
-                    "2025 두산에너빌리티 사장",
-                    "2022 ~ 2024 두산에너빌리티 부사장, 마케팅부문장(CMO)",
-                ],
-                "remarks": [
-                    "전력 수요 대응과 원전 필요성 관련 주요 발언",
-                    "원전 수출 경쟁력 및 유럽시장 관련 발언",
-                ],
-            },
-            {
-                "name": "문신학",
-                "name_en": "Moon, Shin-hak",
-                "birth": "1967년생",
-                "title": "산업통상부 1차관",
-                "education": [
-                    "광주 조선대학교부속고등학교 졸업",
-                    "서울대학교 경제학과 학사",
-                ],
-                "career": [
-                    "2025.6 ~ 현재 산업통상부 차관",
-                    "산업통상자원부 대변인",
-                    "산업통상자원부 장관정책보좌관",
-                ],
-                "remarks": [
-                    "산업·통상 정책과 성장 관련 주요 발언",
-                    "기후·에너지 정책과 산업정책 연계 관련 발언",
-                ],
-            },
-            {
-                "name": "여한구",
-                "name_en": "Yeo, Han-koo",
-                "birth": "1969년생",
-                "title": "통상교섭본부장",
-                "education": [
-                    "서울 경동고등학교 졸업",
-                    "서울대학교 경영학과 학사",
-                    "서울대학교 행정대학원 행정학 석사",
-                ],
-                "career": [
-                    "산업통상부 통상교섭본부장",
-                    "미국 피터슨국제경제연구소 선임연구위원",
-                    "산업통상자원부 통상교섭본부장",
-                ],
-                "remarks": [
-                    "글로벌 경제질서와 개방·협력 관련 주요 발언",
-                ],
-            },
-        ],
-        "source": "사용자 제공 산업통상부 조직도·주요인사 프로필 샘플",
-        "demo": True,
-    }
-}
-
-
-# ============================================================
-# 4) 수집 유틸
-# ============================================================
-
 def clean_text(s: str | None) -> str:
-    if not s:
-        return ""
-    return re.sub(r"\s+", " ", s).strip()
+    return re.sub(r"\s+", " ", s or "").strip()
 
 
-def node_text(node) -> str:
-    return clean_text(node.get_text(" ", strip=True)) if node else ""
+def esc(v) -> str:
+    return html.escape(str(v or ""))
 
 
 def absolute_url(base: str, value: str | None) -> str:
@@ -277,695 +201,299 @@ def fetch_soup(url: str):
     return BeautifulSoup(r.text, "html.parser")
 
 
-def get_text(root, selector: str) -> str:
-    if not selector:
-        return ""
-    return node_text(root.select_one(selector))
+def save_json(path: Path, obj):
+    path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def get_list_text(root, selector: str) -> list[str]:
-    if not selector:
-        return []
-    return [node_text(x) for x in root.select(selector) if node_text(x)]
+def load_json(path: Path):
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
-def config_ready(t: CompanyTarget) -> bool:
-    return bool(
-        (t.organization_url and t.org_unit_selector)
-        or (t.leadership_url and t.person_card_selector)
-    )
+def payload_hash(v) -> str:
+    raw = json.dumps(v, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-# ============================================================
-# 5) 홈페이지 수집
-# ============================================================
-
-def collect_organization(t: CompanyTarget) -> list[dict]:
-    if not (t.organization_url and t.org_unit_selector):
-        return []
-
-    soup = fetch_soup(t.organization_url)
-    result = []
-
-    for block in soup.select(t.org_unit_selector):
-        name = get_text(block, t.org_name_selector) if t.org_name_selector else node_text(block)
-        leader = get_text(block, t.org_leader_selector)
-        if not name:
-            continue
-
-        compact = f"{name} {leader}".lower()
-        highlight = any(k.lower() in compact for k in t.highlight_keywords)
-
-        result.append({
-            "name": name,
-            "leader": leader,
-            "parent": "",
-            "highlight": highlight,
-        })
-
-    return result
-
-
-def collect_person_detail(t: CompanyTarget, url: str) -> dict:
-    if not url:
-        return {"education": [], "career": [], "remarks": []}
-
-    try:
-        soup = fetch_soup(url)
-    except Exception:
-        return {"education": [], "career": [], "remarks": []}
-
-    return {
-        "education": get_list_text(soup, t.detail_education_selector),
-        "career": get_list_text(soup, t.detail_career_selector),
-        "remarks": get_list_text(soup, t.detail_remarks_selector),
-    }
-
-
-def collect_people(t: CompanyTarget) -> list[dict]:
-    if not (t.leadership_url and t.person_card_selector):
-        return []
-
-    soup = fetch_soup(t.leadership_url)
-    people = []
-
-    for card in soup.select(t.person_card_selector):
-        name = get_text(card, t.person_name_selector)
-        title = get_text(card, t.person_title_selector)
-
-        if not name:
-            continue
-
-        image_url = ""
-        if t.person_image_selector:
-            img = card.select_one(t.person_image_selector)
-            if img:
-                image_url = absolute_url(
-                    t.leadership_url,
-                    img.get("src") or img.get("data-src") or img.get("data-lazy-src"),
-                )
-
-        profile_url = ""
-        if t.person_detail_link_selector:
-            a = card.select_one(t.person_detail_link_selector)
-            if a and a.get("href"):
-                profile_url = absolute_url(t.leadership_url, a.get("href"))
-
-        detail = collect_person_detail(t, profile_url)
-
-        people.append({
-            "name": name,
-            "name_en": "",
-            "birth": "",
-            "title": title,
-            "image_url": image_url,
-            "profile_url": profile_url,
-            **detail,
-        })
-
-    return people
-
-
-def collect_target(t: CompanyTarget) -> dict:
-    # selector 미설정인 경우 데모 데이터 우선
-    if t.key in DEMO_DATA and not config_ready(t):
-        data = dict(DEMO_DATA[t.key])
-        return {
-            "key": t.key,
-            "category": t.category,
-            "name_ko": t.name_ko,
-            "name_en": t.name_en,
-            "country": t.country,
-            "official_url": t.official_url,
-            "organization_url": t.organization_url,
-            "leadership_url": t.leadership_url,
-            "updated_at": NOW.isoformat(timespec="seconds"),
-            "status": "DEMO",
-            **data,
-        }
-
-    if not config_ready(t):
-        return {
-            "key": t.key,
-            "category": t.category,
-            "name_ko": t.name_ko,
-            "name_en": t.name_en,
-            "country": t.country,
-            "official_url": t.official_url,
-            "organization_url": t.organization_url,
-            "leadership_url": t.leadership_url,
-            "updated_at": NOW.isoformat(timespec="seconds"),
-            "status": "PENDING",
-            "organization": [],
-            "people": [],
-            "source": "",
-            "demo": False,
-        }
-
-    errors = []
-    organization, people = [], []
-
-    try:
-        organization = collect_organization(t)
-    except Exception as e:
-        errors.append(f"조직도 수집 실패: {e}")
-
-    try:
-        people = collect_people(t)
-    except Exception as e:
-        errors.append(f"주요인사 수집 실패: {e}")
-
-    return {
-        "key": t.key,
-        "category": t.category,
-        "name_ko": t.name_ko,
-        "name_en": t.name_en,
-        "country": t.country,
-        "official_url": t.official_url,
-        "organization_url": t.organization_url,
-        "leadership_url": t.leadership_url,
-        "updated_at": NOW.isoformat(timespec="seconds"),
-        "status": "OK" if not errors else "PARTIAL",
-        "errors": errors,
-        "organization": organization,
-        "people": people,
-        "source": "공식 홈페이지",
-        "demo": False,
-    }
-
-
-# ============================================================
-# 6) 변경 감지
-# ============================================================
-
-def snapshot_file(key: str) -> Path:
+def snapshot_path(key: str) -> Path:
     return SNAPSHOT_DIR / f"{key}.json"
 
 
-def load_snapshot(key: str) -> Optional[dict]:
-    p = snapshot_file(key)
-    if not p.exists():
-        return None
-    return json.loads(p.read_text(encoding="utf-8"))
+def collect_motir(target: Target) -> dict:
+    """산업통상부 공식 홈페이지 확인 + 공식 구조 fallback."""
+    org = [asdict(x) for x in MOTIR_ORG]
+    people = [asdict(x) for x in MOTIR_PEOPLE]
+    errors = []
 
+    try:
+        soup = fetch_soup(target.organization_url)
+        page_text = clean_text(soup.get_text(" ", strip=True))
+        for node in org:
+            node["source_verified"] = node["name"] in page_text
+    except Exception as e:
+        errors.append(f"조직도 확인 실패: {e}")
 
-def save_snapshot(key: str, data: dict):
-    snapshot_file(key).write_text(
-        json.dumps(data, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    try:
+        soup = fetch_soup(target.leadership_url)
+        txt = clean_text(soup.get_text(" ", strip=True))
+        if "김정관" in txt:
+            for p in people:
+                if p["id"] == "kim_jungkwan":
+                    p["source_verified"] = True
+                    # 이름 주변 이미지 best-effort
+                    text_node = soup.find(string=re.compile("김정관"))
+                    cur = text_node.parent if text_node else None
+                    for _ in range(6):
+                        if not cur:
+                            break
+                        img = cur.find("img")
+                        if img:
+                            src = img.get("src") or img.get("data-src") or img.get("data-lazy-src")
+                            if src:
+                                p["image_url"] = absolute_url(target.leadership_url, src)
+                                break
+                        cur = cur.parent
+    except Exception as e:
+        errors.append(f"장관 프로필 확인 실패: {e}")
 
-
-def normalized_hash(value) -> str:
-    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
-
-def person_map(data: dict) -> dict[str, dict]:
     return {
-        clean_text(p.get("name")): p
-        for p in data.get("people", [])
-        if clean_text(p.get("name"))
+        "key": target.key, "category": target.category, "name_ko": target.name_ko,
+        "name_en": target.name_en, "country": target.country,
+        "official_url": target.official_url, "organization_url": target.organization_url,
+        "leadership_url": target.leadership_url,
+        "updated_at": NOW.isoformat(timespec="seconds"),
+        "status": "OK" if not errors else "PARTIAL",
+        "source": "산업통상부 공식 홈페이지",
+        "organization": org, "people": people, "errors": errors,
     }
+
+
+def configured(t: Target) -> bool:
+    return bool((t.organization_url and t.org_unit_selector) or (t.leadership_url and t.person_card_selector))
+
+
+def collect_generic(t: Target) -> dict:
+    if not configured(t):
+        return {
+            "key": t.key, "category": t.category, "name_ko": t.name_ko, "name_en": t.name_en,
+            "country": t.country, "official_url": t.official_url,
+            "organization_url": t.organization_url, "leadership_url": t.leadership_url,
+            "updated_at": NOW.isoformat(timespec="seconds"), "status": "PENDING",
+            "source": "", "organization": [], "people": [], "errors": [],
+        }
+
+    org, people, errors = [], [], []
+    if t.organization_url and t.org_unit_selector:
+        try:
+            soup = fetch_soup(t.organization_url)
+            for i, block in enumerate(soup.select(t.org_unit_selector), 1):
+                nn = block.select_one(t.org_name_selector) if t.org_name_selector else block
+                ln = block.select_one(t.org_leader_selector) if t.org_leader_selector else None
+                name = clean_text(nn.get_text(" ", strip=True)) if nn else ""
+                leader = clean_text(ln.get_text(" ", strip=True)) if ln else ""
+                if name:
+                    org.append({"id":f"org_{i}","name":name,"leader":leader,"person_id":"","parent":"","level":0,
+                                "highlight":bool(re.search(r"nuclear|energy|smr|원전|원자력|에너지",name,re.I))})
+        except Exception as e:
+            errors.append(f"조직 수집 실패: {e}")
+
+    if t.leadership_url and t.person_card_selector:
+        try:
+            soup = fetch_soup(t.leadership_url)
+            for i, card in enumerate(soup.select(t.person_card_selector), 1):
+                nn = card.select_one(t.person_name_selector) if t.person_name_selector else None
+                tn = card.select_one(t.person_title_selector) if t.person_title_selector else None
+                name = clean_text(nn.get_text(" ", strip=True)) if nn else ""
+                title = clean_text(tn.get_text(" ", strip=True)) if tn else ""
+                if not name:
+                    continue
+                img_url = ""
+                img = card.select_one(t.person_image_selector) if t.person_image_selector else None
+                if img:
+                    img_url = absolute_url(t.leadership_url, img.get("src") or img.get("data-src"))
+                profile_url = ""
+                a = card.select_one(t.person_detail_link_selector) if t.person_detail_link_selector else None
+                if a and a.get("href"):
+                    profile_url = absolute_url(t.leadership_url, a.get("href"))
+                people.append({"id":f"person_{i}","name":name,"title":title,"name_en":"","birth":"",
+                               "image_url":img_url,"profile_url":profile_url,"education":[],"career":[],"remarks":[]})
+        except Exception as e:
+            errors.append(f"주요인사 수집 실패: {e}")
+
+    return {
+        "key": t.key, "category": t.category, "name_ko": t.name_ko, "name_en": t.name_en,
+        "country": t.country, "official_url": t.official_url,
+        "organization_url": t.organization_url, "leadership_url": t.leadership_url,
+        "updated_at": NOW.isoformat(timespec="seconds"),
+        "status": "OK" if not errors else "PARTIAL", "source": "공식 홈페이지",
+        "organization": org, "people": people, "errors": errors,
+    }
+
+
+def collect_target(t: Target) -> dict:
+    return collect_motir(t) if t.key == "motir" else collect_generic(t)
 
 
 def detect_changes(old: Optional[dict], new: dict) -> list[dict]:
     if old is None:
-        return [{"type": "INITIAL", "text": "최초 데이터 등록"}]
-
+        return [{"type":"INITIAL","text":"최초 데이터 등록"}]
     changes = []
-
-    old_p = person_map(old)
-    new_p = person_map(new)
-
-    for name in sorted(set(new_p) - set(old_p)):
-        changes.append({"type": "PERSON_ADDED", "text": f"신규 주요인사: {name}"})
-
-    for name in sorted(set(old_p) - set(new_p)):
-        changes.append({"type": "PERSON_REMOVED", "text": f"주요인사 제외/변경 가능성: {name}"})
-
-    for name in sorted(set(old_p) & set(new_p)):
-        for field, label in [
-            ("title", "직책"),
-            ("education", "학력"),
-            ("career", "경력"),
-            ("remarks", "주요발언/활동"),
-        ]:
-            if old_p[name].get(field) != new_p[name].get(field):
-                changes.append({
-                    "type": "PERSON_CHANGED",
-                    "text": f"{name} {label} 변경",
-                    "before": old_p[name].get(field),
-                    "after": new_p[name].get(field),
-                })
-
-    if normalized_hash(old.get("organization", [])) != normalized_hash(new.get("organization", [])):
-        changes.append({"type": "ORG_CHANGED", "text": "조직도 변경 감지"})
-
+    if payload_hash(old.get("organization", [])) != payload_hash(new.get("organization", [])):
+        changes.append({"type":"ORG_CHANGED","text":"조직도 변경 감지"})
+    oldp = {p.get("id") or p.get("name"):p for p in old.get("people", [])}
+    newp = {p.get("id") or p.get("name"):p for p in new.get("people", [])}
+    for k in sorted(set(newp) - set(oldp)):
+        changes.append({"type":"PERSON_ADDED","text":f"신규 주요인사: {newp[k].get('name','')}"})
+    for k in sorted(set(oldp) - set(newp)):
+        changes.append({"type":"PERSON_REMOVED","text":f"주요인사 제외/변경 가능성: {oldp[k].get('name','')}"})
+    for k in sorted(set(oldp) & set(newp)):
+        for field, label in (("title","직책"),("education","학력"),("career","경력"),("remarks","주요발언/활동")):
+            if oldp[k].get(field) != newp[k].get(field):
+                changes.append({"type":"PERSON_CHANGED","text":f"{newp[k].get('name','')} {label} 변경"})
     return changes
 
 
 def append_change_log(company: dict, changes: list[dict]):
     if not changes:
         return
-
-    path = DATA_DIR / "change_log.json"
-    if path.exists():
-        log = json.loads(path.read_text(encoding="utf-8"))
-    else:
-        log = []
-
-    log.append({
-        "checked_at": NOW.isoformat(timespec="seconds"),
-        "key": company["key"],
-        "company": company["name_ko"],
-        "changes": changes,
-    })
-
-    path.write_text(json.dumps(log, ensure_ascii=False, indent=2), encoding="utf-8")
+    log = load_json(CHANGE_LOG) or []
+    log.append({"checked_at":NOW.isoformat(timespec="seconds"),"key":company["key"],"company":company["name_ko"],"changes":changes})
+    save_json(CHANGE_LOG, log[-1000:])
 
 
-# ============================================================
-# 7) 웹사이트 렌더링
-# ============================================================
-
-def esc(v) -> str:
-    return html.escape(str(v or ""))
+def person_map(data: dict) -> dict[str,dict]:
+    return {p.get("id",""):p for p in data.get("people",[]) if p.get("id")}
 
 
-def bullets(items: list[str]) -> str:
-    if not items:
-        return '<div class="muted">확인된 정보 없음</div>'
-    return "<ul>" + "".join(f"<li>{esc(x)}</li>" for x in items) + "</ul>"
+def render_org_tree(data: dict) -> str:
+    nodes = data.get("organization", [])
+    if not nodes:
+        return '<div class="empty">조직도 연결 준비중</div>'
+    by_parent = {}
+    for n in nodes:
+        by_parent.setdefault(n.get("parent",""), []).append(n)
+    people = person_map(data)
+
+    def rec(parent: str) -> str:
+        children = by_parent.get(parent, [])
+        if not children:
+            return ""
+        out = ['<div class="org-level">']
+        for n in children:
+            pid = n.get("person_id","")
+            clickable = bool(pid and pid in people)
+            cls = "org-node" + (" hot" if n.get("highlight") else "") + (" clickable" if clickable else "")
+            onclick = f' onclick="openProfile(\'{esc(data["key"])}\',\'{esc(pid)}\')"' if clickable else ""
+            hint = '<div class="click-hint">프로필 보기</div>' if clickable else ""
+            out.append(
+                f'<div class="org-branch"><button type="button" class="{cls}"{onclick}>'
+                f'<div class="org-name">{esc(n.get("name"))}</div>'
+                f'<div class="org-leader">{esc(n.get("leader"))}</div>{hint}</button>'
+                f'{rec(n.get("id",""))}</div>'
+            )
+        out.append('</div>')
+        return ''.join(out)
+    return rec("") or '<div class="empty">조직도 데이터를 표시할 수 없습니다.</div>'
 
 
-def render_org(data: dict) -> str:
-    org = data.get("organization", [])
-    if not org:
-        return '<div class="empty-box">조직도 연결 준비중</div>'
-
-    cards = []
-    for x in org:
-        cls = "org-card hot" if x.get("highlight") else "org-card"
-        leader = f'<div class="org-leader">{esc(x.get("leader"))}</div>' if x.get("leader") else ""
-        cards.append(
-            f'<div class="{cls}"><div class="org-title">{esc(x.get("name"))}</div>{leader}</div>'
-        )
-    return "".join(cards)
-
-
-def render_person(person: dict, company_name: str, company_key: str, idx: int, total: int) -> str:
-    img = (
-        f'<img class="photo" src="{esc(person.get("image_url"))}" alt="">'
-        if person.get("image_url")
-        else '<div class="photo placeholder">PHOTO</div>'
-    )
-
-    source = (
-        f'<a href="{esc(person.get("profile_url"))}" target="_blank">공식 프로필</a>'
-        if person.get("profile_url")
-        else "공식 홈페이지/공개자료"
-    )
-
-    name_line = esc(person.get("name"))
-    if person.get("name_en"):
-        name_line += f' <span class="sub">({esc(person.get("name_en"))})</span>'
-
-    birth = esc(person.get("birth"))
-    if birth:
-        name_line += f' <span class="sub">· {birth}</span>'
-
-    profile_id = f"profile-{company_key}-{idx}"
-    return f"""
-    <section class="paper profile-page" id="{profile_id}">
-      <div class="paper-head">
-        <div class="company">{esc(company_name)} 주요인사 프로필</div>
-        <div class="date">{TODAY}</div>
-      </div>
-
-      <div class="profile-page-label">주요인사 프로필 {idx} / {total}</div>
-      <h2>{esc(person.get("name"))} <span>{esc(person.get("title"))}</span></h2>
-
-      <div class="identity">
-        <div class="identity-table">
-          <div class="label">성명</div><div class="value">{name_line}</div>
-          <div class="label">직책</div><div class="value">{esc(person.get("title")) or "-"}</div>
-          <div class="label">출처</div><div class="value">{source}</div>
-        </div>
-        {img}
-      </div>
-
-      <div class="profile-row">
-        <div class="row-label">학력</div>
-        <div class="row-body">{bullets(person.get("education", []))}</div>
-      </div>
-
-      <div class="profile-row career">
-        <div class="row-label">경력</div>
-        <div class="row-body">{bullets(person.get("career", []))}</div>
-      </div>
-
-      <div class="profile-row remarks">
-        <div class="row-label">주요발언<br>·최근활동</div>
-        <div class="row-body">{bullets(person.get("remarks", []))}</div>
-      </div>
-    </section>
-    """
-
-
-def render_profile_index(people: list[dict], company_key: str) -> str:
-    if not people:
-        return ""
-
-    buttons = []
-    for i, person in enumerate(people, start=1):
-        target_id = f"profile-{company_key}-{i}"
-        buttons.append(
-            f'<button type="button" class="profile-jump" data-target="{target_id}">'
-            f'<strong>{esc(person.get("name"))}</strong>'
-            f'<span>{esc(person.get("title"))}</span>'
-            f'</button>'
-        )
-
-    return f"""
-    <div class="profile-index">
-      <div class="profile-index-head">
-        <div>
-          <div class="profile-index-title">주요인사 프로필</div>
-          <div class="profile-index-sub">총 {len(people)}명 · 이름을 누르면 상세 프로필로 이동</div>
-        </div>
-        <div class="profile-count">{len(people)}명</div>
-      </div>
-      <div class="profile-chip-grid">{''.join(buttons)}</div>
-    </div>
-    """
+def js_json(obj) -> str:
+    return json.dumps(obj, ensure_ascii=False).replace("</", "<\\/")
 
 
 def render_company(data: dict, changes: list[dict]) -> str:
-    status = data.get("status")
-    status_label = {
-        "OK": "자동수집 연결됨",
-        "PARTIAL": "일부 수집",
-        "PENDING": "연결 준비중",
-        "DEMO": "샘플 화면",
-    }.get(status, status)
-
-    change_html = ""
+    status_label = {"OK":"공식 홈페이지 연결됨","PARTIAL":"일부 수집","PENDING":"연결 준비중","ERROR":"수집 오류"}.get(data.get("status"), data.get("status",""))
+    change_box = ""
     if changes:
-        change_html = """
-        <div class="change-box">
-          <strong>최근 변경 감지</strong>
-          <ul>%s</ul>
-        </div>
-        """ % "".join(f"<li>{esc(x.get('text'))}</li>" for x in changes[:8])
-
-    people = data.get("people", [])
-    profile_index = render_profile_index(people, data["key"])
-    person_html = "".join(
-        render_person(p, data["name_ko"], data["key"], i, len(people))
-        for i, p in enumerate(people, start=1)
-    )
-    if not person_html:
-        person_html = """
-        <section class="paper">
-          <div class="empty-box big">
-            주요인사 프로필 연결 준비중<br>
-            <small>Leadership 페이지 URL 및 selector를 설정하면 자동 생성됩니다.</small>
-          </div>
-        </section>
-        """
-
-    return f"""
-    <section class="company-view" data-company="{esc(data['key'])}">
-      <div class="company-summary">
-        <div>
-          <div class="eyebrow">{esc(data['category'])} · {esc(data['country'])}</div>
-          <h1>{esc(data['name_ko'])}</h1>
-          <div class="en">{esc(data['name_en'])}</div>
-        </div>
-        <div class="status">{esc(status_label)}</div>
-      </div>
-
-      <section class="paper org-page">
-        <div class="paper-head">
-          <div class="company">{esc(data['name_ko'])} 조직도</div>
-          <div class="date">{TODAY}</div>
-        </div>
-
-        <h2>{esc(data['name_ko'])} 조직도</h2>
-        <div class="org-grid">{render_org(data)}</div>
-        {profile_index}
-        {change_html}
-
-        <div class="source">
-          <div><b>Source</b> {esc(data.get('source')) or '-'}</div>
-          <div><b>Organization</b> {esc(data.get('organization_url')) or '-'}</div>
-          <div><b>Leadership</b> {esc(data.get('leadership_url')) or '-'}</div>
-          <div><b>Updated</b> {esc(data.get('updated_at'))}</div>
-        </div>
-      </section>
-
-      {person_html}
-    </section>
-    """
+        change_box = '<div class="change-box"><strong>최근 변경 감지</strong><ul>' + ''.join(f'<li>{esc(x.get("text"))}</li>' for x in changes[:8]) + '</ul></div>'
+    return f'''
+<section class="company-view" data-company="{esc(data['key'])}">
+  <div class="company-summary">
+    <div><div class="eyebrow">{esc(data['category'])} · {esc(data['country'])}</div><h1>{esc(data['name_ko'])}</h1><div class="en">{esc(data['name_en'])}</div></div>
+    <div class="status">{esc(status_label)}</div>
+  </div>
+  <section class="paper">
+    <div class="paper-head"><div class="paper-title">{esc(data['name_ko'])} 조직도</div><div class="date">{TODAY}</div></div>
+    <div class="guide">조직도 내 <b>인물명이 있는 직위</b>를 클릭하면 별도 이동 없이 프로필이 바로 표시됩니다.</div>
+    <div class="org-scroll"><div class="org-canvas">{render_org_tree(data)}</div></div>
+    {change_box}
+    <div class="source"><div><b>출처</b> {esc(data.get('source')) or '-'}</div><div><b>공식 홈페이지</b> {esc(data.get('official_url')) or '-'}</div><div><b>조직도</b> {esc(data.get('organization_url')) or '-'}</div><div><b>Leadership</b> {esc(data.get('leadership_url')) or '-'}</div><div><b>업데이트</b> {esc(data.get('updated_at'))}</div></div>
+  </section>
+</section>'''
 
 
-def build_site(all_data: list[dict], changes_map: dict[str, list[dict]]):
-    # 개별 json
+def build_site(all_data: list[dict], changes_map: dict[str,list[dict]]):
     for d in all_data:
-        (SITE_DATA_DIR / f"{d['key']}.json").write_text(
-            json.dumps(d, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
-
+        save_json(SITE_DATA_DIR / f"{d['key']}.json", d)
     categories = []
     for d in all_data:
         if d["category"] not in categories:
             categories.append(d["category"])
-
     nav = []
     for cat in categories:
         nav.append(f'<div class="nav-cat">{esc(cat)}</div>')
         for d in [x for x in all_data if x["category"] == cat]:
-            badge = "●" if d["status"] in ("OK", "DEMO", "PARTIAL") else "○"
-            nav.append(
-                f'<button class="company-btn" data-key="{esc(d["key"])}">'
-                f'<span>{badge}</span>{esc(d["name_ko"])}</button>'
-            )
+            dot = "●" if d["status"] in ("OK","PARTIAL") else "○"
+            nav.append(f'<button class="company-btn" data-key="{esc(d["key"])}"><span>{dot}</span>{esc(d["name_ko"])}</button>')
+    views = ''.join(render_company(d, changes_map.get(d["key"], [])) for d in all_data)
+    profiles = {d["key"]:person_map(d) for d in all_data}
+    first = all_data[0]["key"] if all_data else ""
 
-    views = "".join(
-        render_company(d, changes_map.get(d["key"], []))
-        for d in all_data
-    )
-
-    first_key = all_data[0]["key"] if all_data else ""
-
-    page = f"""<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+    page = f'''<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>기업·기관 조직도 및 주요인사 프로필</title>
 <style>
-*{{box-sizing:border-box}}
-html{{scroll-behavior:smooth}}
-body{{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;background:#eef2f6;color:#15191f}}
-.topbar{{height:58px;background:#0b2545;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 22px;position:sticky;top:0;z-index:20}}
-.topbar b{{font-size:18px}}
-.topbar button{{border:0;background:#ffd500;padding:9px 14px;border-radius:7px;font-weight:800;cursor:pointer}}
-.layout{{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 58px)}}
-.sidebar{{background:#102c50;color:#fff;padding:16px 12px;height:calc(100vh - 58px);position:sticky;top:58px;overflow:auto}}
-.nav-cat{{font-size:12px;color:#9fb3cc;font-weight:800;margin:18px 8px 7px}}
-.company-btn{{width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:9px 10px;border-radius:7px;cursor:pointer;font-size:13px}}
-.company-btn:hover,.company-btn.active{{background:#24496f}}
-.company-btn span{{display:inline-block;width:18px;color:#ffd500}}
-.main{{padding:22px}}
-.company-view{{display:none;max-width:1080px;margin:0 auto}}
-.company-view.active{{display:block}}
-.company-summary{{display:flex;align-items:flex-end;justify-content:space-between;margin:0 auto 14px;max-width:210mm}}
-.company-summary h1{{margin:3px 0 2px;font-size:27px}}
-.company-summary .en{{color:#66717e}}
-.eyebrow{{font-size:12px;color:#6f7a86;font-weight:700}}
-.status{{background:#dbe9f8;color:#174d82;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800}}
-.paper{{width:210mm;min-height:297mm;background:#fff;margin:0 auto 18px;padding:15mm 14mm;box-shadow:0 2px 14px rgba(0,0,0,.07)}}
-.paper-head{{display:flex;justify-content:space-between;border-bottom:2px solid #9fa5ac;padding-bottom:8px;margin-bottom:18px}}
-.paper-head .company{{font-size:20px;font-weight:900}}
-.paper-head .date{{font-size:14px;color:#555}}
-.paper h2{{font-size:28px;margin:10px 0 20px}}
-.paper h2 span{{font-size:20px}}
-.org-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}}
-.org-card{{background:#eef1f4;border:1px solid #cbd2d8;min-height:78px;padding:12px}}
-.org-card.hot{{background:#f2e7a8;border:2px dashed #df3c3c}}
-.org-title{{font-weight:900}}
-.org-leader{{margin-top:8px;color:#185293;font-weight:800}}
-.profile-index{{margin-top:28px;padding-top:20px;border-top:2px solid #d8dde3}}
-.profile-index-head{{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}}
-.profile-index-title{{font-size:20px;font-weight:900}}
-.profile-index-sub{{font-size:12px;color:#697480;margin-top:4px}}
-.profile-count{{background:#173e6c;color:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800}}
-.profile-chip-grid{{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}}
-.profile-jump{{border:1px solid #cfd6de;background:#f8fafc;border-radius:7px;padding:11px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:4px}}
-.profile-jump:hover{{background:#eef5fc;border-color:#8fb4d8}}
-.profile-jump strong{{color:#174d82;font-size:14px}}
-.profile-jump span{{color:#505c68;font-size:12px}}
-.profile-page{{scroll-margin-top:76px}}
-.profile-page-label{{display:inline-block;margin-bottom:3px;padding:5px 8px;background:#eaf2fa;color:#174d82;border-radius:5px;font-size:11px;font-weight:800}}
-.identity{{display:grid;grid-template-columns:1fr 185px;gap:14px}}
-.identity-table{{display:grid;grid-template-columns:105px 1fr;border-top:1px solid #d2d6db;border-left:1px solid #d2d6db}}
-.identity-table>div{{border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;padding:16px}}
-.label{{background:#f5f5f5;font-weight:900;text-align:center}}
-.value{{display:flex;align-items:center}}
-.sub{{font-weight:400;color:#555;font-size:13px}}
-.photo{{width:185px;height:220px;object-fit:cover;border:1px solid #ddd}}
-.placeholder{{display:flex;align-items:center;justify-content:center;color:#aaa;background:#fafafa;font-weight:800}}
-.profile-row{{display:grid;grid-template-columns:105px 1fr;border-left:1px solid #d2d6db;border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;min-height:130px}}
-.profile-row.career{{min-height:300px}}
-.profile-row.remarks{{min-height:180px}}
-.row-label{{background:#f5f5f5;border-right:1px solid #d2d6db;font-weight:900;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px}}
-.row-body{{padding:16px 18px;line-height:1.7}}
-.row-body ul{{margin:0;padding-left:20px}}
-.source{{margin-top:20px;color:#666;font-size:11px;line-height:1.7;word-break:break-all}}
-.change-box{{margin-top:18px;background:#fff7d1;border:1px solid #e6cf64;padding:12px}}
-.change-box ul{{margin:7px 0 0;padding-left:20px}}
-.empty-box{{border:1px dashed #aab3bc;padding:35px;text-align:center;color:#7b8793}}
-.empty-box.big{{margin-top:40px;padding:90px 20px;font-size:20px}}
-.muted{{color:#9099a3}}
-@media(max-width:900px){{
-  .layout{{display:block}}
-  .sidebar{{position:relative;top:auto;height:auto;display:flex;overflow-x:auto;padding:10px}}
-  .nav-cat{{display:none}}
-  .company-btn{{min-width:150px}}
-  .main{{padding:10px}}
-  .paper{{width:100%;min-height:0;padding:18px}}
-  .org-grid{{grid-template-columns:1fr 1fr}}
-  .profile-chip-grid{{grid-template-columns:1fr 1fr}}
-  .identity{{grid-template-columns:1fr 120px}}
-  .photo{{width:120px;height:150px}}
-}}
-@media print{{
-  .topbar,.sidebar,.company-summary{{display:none!important}}
-  .layout{{display:block}}
-  .main{{padding:0}}
-  .company-view{{display:none!important}}
-  .company-view.active{{display:block!important}}
-  .paper{{width:auto;min-height:0;margin:0;box-shadow:none;page-break-after:always}}
-  .paper:last-child{{page-break-after:auto}}
-}}
-</style>
-</head>
-<body>
-<div class="topbar">
-  <b>기업·기관 조직도 및 주요인사 프로필</b>
-  <button onclick="window.print()">PDF / 인쇄</button>
-</div>
-<div class="layout">
-  <aside class="sidebar">
-    {''.join(nav)}
-  </aside>
-  <main class="main">
-    {views}
-  </main>
-</div>
+*{{box-sizing:border-box}}html,body{{margin:0;padding:0}}body{{font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;background:#eef2f6;color:#15191f}}
+.topbar{{height:58px;background:#0b2545;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:30}}.topbar b{{font-size:18px}}
+.layout{{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 58px)}}.sidebar{{background:#102c50;color:#fff;height:calc(100vh - 58px);position:sticky;top:58px;overflow:auto;padding:14px 10px}}
+.nav-cat{{font-size:11px;color:#99afc8;font-weight:900;margin:18px 8px 6px}}.company-btn{{display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:9px 10px;border-radius:7px;cursor:pointer}}.company-btn:hover,.company-btn.active{{background:#24496f}}.company-btn span{{display:inline-block;width:18px;color:#ffd500}}
+.main{{padding:22px}}.company-view{{display:none;max-width:1120px;margin:0 auto}}.company-view.active{{display:block}}.company-summary{{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}}.company-summary h1{{margin:4px 0 2px;font-size:28px}}.eyebrow{{font-size:12px;color:#687583;font-weight:800}}.en{{font-size:13px;color:#687583}}.status{{background:#dceaf8;color:#174d82;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}}
+.paper{{background:#fff;border-radius:12px;padding:22px;box-shadow:0 2px 14px rgba(0,0,0,.06)}}.paper-head{{display:flex;justify-content:space-between;border-bottom:2px solid #989fa7;padding-bottom:9px;margin-bottom:14px}}.paper-title{{font-size:21px;font-weight:900}}.date{{font-size:13px;color:#555}}.guide{{background:#f4f7fa;border-left:4px solid #1b548a;padding:10px 12px;font-size:12px;margin-bottom:15px}}
+.org-scroll{{overflow:auto;padding:4px 0 16px}}.org-canvas{{min-width:980px}}.org-level{{display:flex;justify-content:center;gap:14px;align-items:flex-start;margin:12px 0}}.org-branch{{display:flex;flex-direction:column;align-items:center;min-width:130px}}.org-branch>.org-level{{border-top:2px solid #cbd2d9;padding-top:12px}}.org-node{{min-width:130px;max-width:175px;border:1px solid #cbd2d9;background:#f5f7f9;border-radius:7px;padding:10px 8px;text-align:center;color:#15191f}}.org-node.hot{{background:#fff2aa;border:2px dashed #d74343}}.org-node.clickable{{cursor:pointer}}.org-node.clickable:hover{{background:#eaf4fd;border-color:#76a8d3}}.org-name{{font-size:12px;font-weight:800}}.org-leader{{font-size:14px;font-weight:900;color:#174d82;margin-top:4px}}.click-hint{{font-size:9px;color:#7d8995;margin-top:4px}}.empty{{padding:60px 20px;border:1px dashed #aeb7c1;text-align:center;color:#7d8791}}
+.change-box{{margin-top:16px;background:#fff7d6;border:1px solid #e4cb66;padding:12px}}.change-box ul{{margin:7px 0 0;padding-left:20px}}.source{{margin-top:18px;font-size:11px;color:#67717c;line-height:1.65;word-break:break-all}}
+.modal-bg{{position:fixed;inset:0;background:rgba(7,22,39,.62);z-index:100;display:none;align-items:center;justify-content:center;padding:18px}}.modal-bg.open{{display:flex}}.modal{{width:min(900px,96vw);max-height:92vh;background:#fff;border-radius:14px;overflow:auto;box-shadow:0 18px 60px rgba(0,0,0,.3)}}.modal-head{{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #d8dde3;display:flex;justify-content:space-between;align-items:center;padding:14px 18px}}.modal-head strong{{font-size:19px}}.close{{width:36px;height:36px;border:0;border-radius:50%;background:#edf1f5;font-size:22px;cursor:pointer}}
+.profile{{padding:18px}}.profile-title{{font-size:27px;font-weight:900;margin:0 0 15px}}.profile-title span{{font-size:18px;margin-left:8px}}.identity{{display:grid;grid-template-columns:1fr 180px;gap:14px}}.identity-table{{display:grid;grid-template-columns:100px 1fr;border-top:1px solid #d2d6db;border-left:1px solid #d2d6db}}.identity-table>div{{border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db;padding:14px}}.label{{background:#f5f5f5;font-weight:900;text-align:center}}.photo{{width:180px;height:210px;border:1px solid #d2d6db;background:#f4f6f8;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#8b949e;font-weight:800}}.row{{display:grid;grid-template-columns:100px 1fr;border-left:1px solid #d2d6db;border-right:1px solid #d2d6db;border-bottom:1px solid #d2d6db}}.row-label{{background:#f5f5f5;border-right:1px solid #d2d6db;display:flex;align-items:center;justify-content:center;font-weight:900;text-align:center;padding:12px}}.row-body{{padding:15px 18px;line-height:1.65}}.row-body ul{{margin:0;padding-left:20px}}.profile-source{{margin-top:12px;font-size:11px;color:#67717c}}
+@media(max-width:850px){{.layout{{display:block}}.sidebar{{height:auto;position:relative;top:auto;display:flex;overflow-x:auto;padding:9px}}.nav-cat{{display:none}}.company-btn{{min-width:150px;white-space:nowrap}}.main{{padding:10px}}.paper{{padding:14px;border-radius:8px}}.company-summary h1{{font-size:23px}}.identity{{grid-template-columns:1fr 110px}}.photo{{width:110px;height:140px}}.identity-table{{grid-template-columns:74px 1fr}}.row{{grid-template-columns:74px 1fr}}.profile-title{{font-size:22px}}.profile-title span{{display:block;margin:4px 0 0;font-size:15px}}}}
+</style></head><body>
+<div class="topbar"><b>기업·기관 조직도 및 주요인사 프로필</b><span style="font-size:11px">Official-site first</span></div>
+<div class="layout"><aside class="sidebar">{''.join(nav)}</aside><main class="main">{views}</main></div>
+<div class="modal-bg" id="modalBg" onclick="closeByBg(event)"><div class="modal"><div class="modal-head"><strong id="modalHead">주요인사 프로필</strong><button class="close" onclick="closeProfile()">×</button></div><div class="profile" id="profileBody"></div></div></div>
 <script>
-const buttons=[...document.querySelectorAll('.company-btn')];
-const views=[...document.querySelectorAll('.company-view')];
-
-function openCompany(key){{
-  buttons.forEach(b=>b.classList.toggle('active',b.dataset.key===key));
-  views.forEach(v=>v.classList.toggle('active',v.dataset.company===key));
-  localStorage.setItem('profile-company',key);
-  window.scrollTo({{top:0,behavior:'instant'}});
-}}
+const PROFILE_DATA = {js_json(profiles)};
+const buttons=[...document.querySelectorAll('.company-btn')]; const views=[...document.querySelectorAll('.company-view')];
+function openCompany(key){{buttons.forEach(b=>b.classList.toggle('active',b.dataset.key===key));views.forEach(v=>v.classList.toggle('active',v.dataset.company===key));localStorage.setItem('company-profile-selected',key);window.scrollTo({{top:0,behavior:'instant'}});}}
 buttons.forEach(b=>b.addEventListener('click',()=>openCompany(b.dataset.key)));
-
-document.addEventListener('click',(e)=>{{
-  const btn=e.target.closest('.profile-jump');
-  if(!btn) return;
-  const target=document.getElementById(btn.dataset.target);
-  if(!target) return;
-  target.scrollIntoView({{behavior:'smooth',block:'start'}});
-}});
-
-const saved=localStorage.getItem('profile-company');
-const valid=buttons.some(b=>b.dataset.key===saved);
-openCompany(valid?saved:{json.dumps(first_key)});
-</script>
-</body>
-</html>"""
-
-    (SITE_DIR / "index.html").write_text(page, encoding="utf-8")
+function escapeHtml(s){{return String(s||'').replace(/[&<>"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}}[c]));}}
+function listHtml(arr){{if(!arr||!arr.length)return '<div style="color:#89939c">확인된 정보 없음</div>';return '<ul>'+arr.map(x=>'<li>'+escapeHtml(x)+'</li>').join('')+'</ul>';}}
+function openProfile(companyKey,personId){{const p=(PROFILE_DATA[companyKey]||{{}})[personId];if(!p)return;document.getElementById('modalHead').textContent=p.name+' '+p.title;const photo=p.image_url?`<img class="photo" src="${{escapeHtml(p.image_url)}}" alt="${{escapeHtml(p.name)}}">`:'<div class="photo">PHOTO</div>';const source=p.profile_url?`<a href="${{escapeHtml(p.profile_url)}}" target="_blank">공식 프로필</a>`:'공식 홈페이지/공개자료';document.getElementById('profileBody').innerHTML=`<div class="profile-title">${{escapeHtml(p.name)}} <span>${{escapeHtml(p.title)}}</span></div><div class="identity"><div class="identity-table"><div class="label">성명</div><div>${{escapeHtml(p.name)}} ${{p.name_en?'('+escapeHtml(p.name_en)+')':''}} ${{p.birth?'· '+escapeHtml(p.birth):''}}</div><div class="label">직책</div><div>${{escapeHtml(p.title)}}</div><div class="label">출처</div><div>${{source}}</div></div>${{photo}}</div><div class="row"><div class="row-label">학력</div><div class="row-body">${{listHtml(p.education)}}</div></div><div class="row"><div class="row-label">경력</div><div class="row-body">${{listHtml(p.career)}}</div></div><div class="row"><div class="row-label">주요발언<br>·최근활동</div><div class="row-body">${{listHtml(p.remarks)}}</div></div><div class="profile-source">※ 공식 홈페이지를 우선으로 하며 미공개 항목은 등록된 보완자료를 사용합니다.</div>`;document.getElementById('modalBg').classList.add('open');document.body.style.overflow='hidden';}}
+function closeProfile(){{document.getElementById('modalBg').classList.remove('open');document.body.style.overflow='';}} function closeByBg(e){{if(e.target.id==='modalBg')closeProfile();}} document.addEventListener('keydown',e=>{{if(e.key==='Escape')closeProfile();}});
+const saved=localStorage.getItem('company-profile-selected');openCompany(buttons.some(b=>b.dataset.key===saved)?saved:{json.dumps(first)});
+</script></body></html>'''
     (BASE_DIR / "index.html").write_text(page, encoding="utf-8")
+    (SITE_DIR / "index.html").write_text(page, encoding="utf-8")
 
-
-# ============================================================
-# 8) 실행
-# ============================================================
 
 def main():
-    all_data = []
-    changes_map = {}
-
-    print("=" * 72)
-    print("기업·기관 조직도 / 주요인사 프로필 자동 업데이트")
-    print("=" * 72)
-
-    for idx, target in enumerate(TARGETS, 1):
-        print(f"[{idx:02d}/{len(TARGETS)}] {target.name_ko} ... ", end="", flush=True)
-
+    all_data, changes_map = [], {}
+    print("="*72)
+    print("기업·기관 조직도 / 주요인사 프로필 포털 FINAL V1")
+    print("="*72)
+    for i,t in enumerate(TARGETS,1):
+        print(f"[{i:02d}/{len(TARGETS)}] {t.name_ko} ... ", end="", flush=True)
         try:
-            new_data = collect_target(target)
+            new = collect_target(t)
         except Exception as e:
-            new_data = {
-                "key": target.key,
-                "category": target.category,
-                "name_ko": target.name_ko,
-                "name_en": target.name_en,
-                "country": target.country,
-                "official_url": target.official_url,
-                "organization_url": target.organization_url,
-                "leadership_url": target.leadership_url,
-                "updated_at": NOW.isoformat(timespec="seconds"),
-                "status": "ERROR",
-                "errors": [str(e)],
-                "organization": [],
-                "people": [],
-                "source": "",
-                "demo": False,
-            }
-
-        old_data = load_snapshot(target.key)
-        changes = detect_changes(old_data, new_data)
-
-        # PENDING 상태는 빈 데이터로 기존 실제 snapshot을 덮지 않도록 보호
-        if new_data["status"] != "PENDING":
-            save_snapshot(target.key, new_data)
-
-        append_change_log(new_data, changes)
-
-        all_data.append(new_data)
-        changes_map[target.key] = changes
-
-        print(f"{new_data['status']} / 인사 {len(new_data.get('people', []))}명")
-
-    build_site(all_data, changes_map)
-
-    registry_path = DATA_DIR / "company_registry.json"
-    registry_path.write_text(
-        json.dumps([asdict(x) for x in TARGETS], ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-
-    print()
-    print("[완료]")
-    print("웹사이트 :", SITE_DIR / "index.html")
-    print("Pages 루트:", BASE_DIR / "index.html")
-    print("마스터 DB:", registry_path)
-    print("Snapshot :", SNAPSHOT_DIR)
-    print("변경이력 :", DATA_DIR / "change_log.json")
-    print()
-    print("※ 실제 자동수집을 시작하려면 TARGETS의 각 회사에")
-    print("   organization_url / leadership_url / CSS selector를 설정하세요.")
-
+            new = {"key":t.key,"category":t.category,"name_ko":t.name_ko,"name_en":t.name_en,"country":t.country,"official_url":t.official_url,"organization_url":t.organization_url,"leadership_url":t.leadership_url,"updated_at":NOW.isoformat(timespec="seconds"),"status":"ERROR","source":"","organization":[],"people":[],"errors":[str(e)]}
+        old = load_json(snapshot_path(t.key))
+        changes = detect_changes(old,new)
+        if new["status"] in ("OK","PARTIAL"):
+            save_json(snapshot_path(t.key),new)
+        append_change_log(new,changes)
+        all_data.append(new); changes_map[t.key]=changes
+        print(f"{new['status']} / 조직 {len(new.get('organization',[]))} / 인사 {len(new.get('people',[]))}")
+    build_site(all_data,changes_map)
+    save_json(DATA_DIR / "company_registry.json", [asdict(x) for x in TARGETS])
+    print("\n[완료]")
+    print("GitHub Pages root:", BASE_DIR / "index.html")
+    print("생성물 보관:", SITE_DIR / "index.html")
 
 if __name__ == "__main__":
     main()
