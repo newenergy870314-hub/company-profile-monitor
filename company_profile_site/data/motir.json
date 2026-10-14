@@ -7,8 +7,8 @@
   "official_url": "https://www.motir.go.kr/",
   "organization_url": "https://www.motir.go.kr/kor/26/headquarters",
   "leadership_url": "https://www.motir.go.kr/kor/contents/70",
-  "updated_at": "2026-10-14T09:11:11+09:00",
-  "status": "PARTIAL",
+  "updated_at": "2026-10-15T08:44:46+09:00",
+  "status": "OK",
   "source": "산업통상부 공식 홈페이지",
   "organization": [
     {
@@ -18,7 +18,8 @@
       "person_id": "kim_jungkwan",
       "parent": "",
       "level": 0,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "advisor",
@@ -27,7 +28,8 @@
       "person_id": "",
       "parent": "minister",
       "level": 1,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "spokesperson",
@@ -36,7 +38,8 @@
       "person_id": "",
       "parent": "minister",
       "level": 1,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "audit",
@@ -45,7 +48,8 @@
       "person_id": "",
       "parent": "minister",
       "level": 1,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "vice",
@@ -54,7 +58,8 @@
       "person_id": "moon_shinhak",
       "parent": "minister",
       "level": 1,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "planning",
@@ -63,7 +68,8 @@
       "person_id": "",
       "parent": "vice",
       "level": 2,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "industry",
@@ -72,7 +78,8 @@
       "person_id": "",
       "parent": "vice",
       "level": 2,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "growth",
@@ -81,7 +88,8 @@
       "person_id": "",
       "parent": "vice",
       "level": 2,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "security",
@@ -90,7 +98,8 @@
       "person_id": "yang_kiuk",
       "parent": "vice",
       "level": 2,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "trade_head",
@@ -99,7 +108,8 @@
       "person_id": "yeo_hankoo",
       "parent": "minister",
       "level": 1,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "trade_policy",
@@ -108,7 +118,8 @@
       "person_id": "",
       "parent": "trade_head",
       "level": 2,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "trade_coop",
@@ -117,7 +128,8 @@
       "person_id": "",
       "parent": "trade_head",
       "level": 2,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "trade_neg",
@@ -126,7 +138,8 @@
       "person_id": "",
       "parent": "trade_head",
       "level": 2,
-      "highlight": false
+      "highlight": false,
+      "source_verified": true
     },
     {
       "id": "investment",
@@ -135,7 +148,8 @@
       "person_id": "kang_gamchan",
       "parent": "trade_head",
       "level": 2,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "nuclear",
@@ -144,7 +158,8 @@
       "person_id": "kim_changhee",
       "parent": "investment",
       "level": 3,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "nuclear_export",
@@ -153,7 +168,8 @@
       "person_id": "",
       "parent": "nuclear",
       "level": 4,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     },
     {
       "id": "nuclear_coop",
@@ -162,7 +178,8 @@
       "person_id": "",
       "parent": "nuclear",
       "level": 4,
-      "highlight": true
+      "highlight": true,
+      "source_verified": true
     }
   ],
   "people": [
@@ -172,7 +189,7 @@
       "title": "산업통상부 장관",
       "name_en": "Kim, Jung-kwan",
       "birth": "1968년생",
-      "image_url": "",
+      "image_url": "https://www.motir.go.kr/images/contents/sub/photo_person01.png",
       "profile_url": "https://www.motir.go.kr/kor/contents/70",
       "education": [
         "광주제일고등학교 졸업",
@@ -189,7 +206,8 @@
       "remarks": [
         "전력수요 대응과 원전 역할 관련 주요 발언",
         "원전 수출 경쟁력 및 해외시장 관련 주요 발언"
-      ]
+      ],
+      "source_verified": true
     },
     {
       "id": "moon_shinhak",
@@ -307,8 +325,5 @@
       ]
     }
   ],
-  "errors": [
-    "조직도 확인 실패: HTTPSConnectionPool(host='www.motir.go.kr', port=443): Max retries exceeded with url: /kor/26/headquarters (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.motir.go.kr', port=443) at 0x7f3f472a8da0>, 'Connection to www.motir.go.kr timed out. (connect timeout=25)'))",
-    "장관 프로필 확인 실패: HTTPSConnectionPool(host='www.motir.go.kr', port=443): Max retries exceeded with url: /kor/contents/70 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.motir.go.kr', port=443) at 0x7f3f4705e300>, 'Connection to www.motir.go.kr timed out. (connect timeout=25)'))"
-  ]
+  "errors": []
 }
