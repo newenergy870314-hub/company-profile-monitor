@@ -4816,5 +4816,346 @@
         "text": "최초 데이터 등록"
       }
     ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "holtec",
+    "company": "홀텍 인터내셔널",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "fortum",
+    "company": "포툼",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "khnp",
+    "company": "한수원",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "kepco",
+    "company": "한국전력",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "kaeri",
+    "company": "한국원자력연구원",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "mcee",
+    "company": "기후에너지환경부",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "msit",
+    "company": "과학기술정보통신부",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "westinghouse",
+    "company": "웨스팅하우스",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "terrapower",
+    "company": "테라파워",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "xenergy",
+    "company": "엑스에너지",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "blueenergy",
+    "company": "블루에너지",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "fermiamerica",
+    "company": "퍼미 아메리카",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "enec",
+    "company": "UAE 원자력공사",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "entergy",
+    "company": "엔터지 서비스",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "fanco",
+    "company": "퍼스트 아메리칸 뉴클리어",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "thorizon",
+    "company": "토리존",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "duke",
+    "company": "듀크에너지",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "pseg",
+    "company": "PSEG",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "genenergija",
+    "company": "젠 에너지",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "whitingturner",
+    "company": "Whiting-Turner",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "pcl",
+    "company": "PCL Construction",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "bartonmalow",
+    "company": "Barton Malow",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "clayco",
+    "company": "Clayco",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "alberici",
+    "company": "Alberici",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "brandsafway",
+    "company": "BrandSafway",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "cbi",
+    "company": "CB&I",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "dayzimmermann",
+    "company": "Day & Zimmermann",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "dpr",
+    "company": "DPR Construction",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "evans",
+    "company": "Evans General Contractors",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "walbridge",
+    "company": "Walbridge",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
+  },
+  {
+    "checked_at": "2026-10-19T07:50:23+09:00",
+    "key": "zachry",
+    "company": "Zachry Group",
+    "changes": [
+      {
+        "type": "INITIAL",
+        "text": "최초 데이터 등록"
+      }
+    ]
   }
 ]
